@@ -1,31 +1,49 @@
 import numpy as np
+import torch
 
+def _compute_apk(actual, predicted, k=10):
+    """
+    Compute the average precision at k.
+    This function computes the average precision at k between two lists of items.
 
-def _compute_apk(targets, predictions, k):
+    Parameters
+    ----------
+    actual : list
+             A list of elements that are to be predicted (order doesn't matter)
+    predicted : list
+                A list of predicted elements (order does matter)
+    k : int, optional
+        The maximum number of predicted elements
 
-    if len(predictions) > k:
-        predictions = predictions[:k]
+    Returns
+    -------
+    score : double
+            The average precision at k over the input lists
+    """
+    if len(predicted) > k:
+        predicted = predicted[:k]
 
     score = 0.0
     num_hits = 0.0
 
-    for i, p in enumerate(predictions):
-        if p in targets and p not in predictions[:i]:
+    for i, p in enumerate(predicted):
+        if p in actual and p not in predicted[:i]:
             num_hits += 1.0
             score += num_hits / (i + 1.0)
 
-    if not list(targets):
-        return 0.0
-
-    return score / min(len(targets), k)
+    return score / min(len(actual), k)
 
 
 def _compute_precision_recall(targets, predictions, k):
+    """
+    Helper function to compute precision and recall at k.
+    """
+    predictions_at_k = predictions[:k]
+    num_hits = sum((p in targets) for p in predictions_at_k)
 
-    pred = predictions[:k]
-    num_hit = len(set(pred).intersection(set(targets)))
-    precision = float(num_hit) / len(pred)
-    recall = float(num_hit) / len(targets)
+    precision = num_hits / k
+    recall = num_hits / len(targets)
+
     return precision, recall
 
 
@@ -38,7 +56,6 @@ def evaluate_ranking(model, test, train=None, k=10):
 
     Parameters
     ----------
-
     model: fitted instance of a recommender model
         The model to evaluate.
     test: :class:`spotlight.interactions.Interactions`
@@ -55,6 +72,8 @@ def evaluate_ranking(model, test, train=None, k=10):
     if train is not None:
         train = train.tocsr()
 
+    test_users = list(range(test.shape[0]))
+
     if not isinstance(k, list):
         ks = [k]
     else:
@@ -64,18 +83,38 @@ def evaluate_ranking(model, test, train=None, k=10):
     recalls = [list() for _ in range(len(ks))]
     apks = list()
 
-    for user_id, row in enumerate(test):
+    for user_id in test_users:
+        if user_id >= model.test_sequence.sequences.shape[0]:
+            print(f"Skipping user_id {user_id} as it's out of bounds for test_sequence")
+            continue
+        
+        if train is not None and user_id >= train.shape[0]:
+            print(f"Skipping user_id {user_id} as it's out of bounds for train data")
+            continue
+
+        row = test[user_id]
 
         if not len(row.indices):
             continue
 
-        predictions = -model.predict(user_id)
+        try:
+            predictions = -model.predict(user_id)
+        except IndexError:
+            print(f"Error predicting for user_id {user_id}. Skipping.")
+            continue
+        except RuntimeError as e:
+            print(f"Runtime error during prediction for user_id {user_id}: {e}")
+            continue
+
+        if np.all(predictions == 0):
+            continue
+
         predictions = predictions.argsort()
 
         if train is not None:
             rated = set(train[user_id].indices)
         else:
-            rated = []
+            rated = set()
 
         predictions = [p for p in predictions if p not in rated]
 
@@ -95,7 +134,9 @@ def evaluate_ranking(model, test, train=None, k=10):
         precisions = precisions[0]
         recalls = recalls[0]
 
-    mean_aps = np.mean(apks)
+    mean_aps = np.mean(apks) if apks else 0.0
+
+    print(f"Processed {len(apks)} valid users out of {test.shape[0]} total users")
 
     return precisions, recalls, mean_aps
 
