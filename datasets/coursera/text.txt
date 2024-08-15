@@ -1,0 +1,334 @@
+0 AI For Everyone
+1 AWS Cloud Technical Essentials
+2 AWS S3 Basics
+3 Academic Discussions in English
+4 Accomplishment STAR Techniques for Job Interviews
+5 Advanced Speaking and Listening Project
+6 Advanced Valuation and Strategy - M&A, Private Equity, and Venture Capital
+7 Agile Project Management
+8 Algorithmic Toolbox
+9 Algorithms, Part I
+10 Algorithms, Part II
+11 Analyze Data to Answer Questions
+12 Ancient Philosophy: Aristotle and His Successors
+13 Ancient Philosophy: Plato & His Predecessors
+14 Applied Machine Learning in Python
+15 Ask Questions to Make Data-Driven Decisions
+16 Assessment for Learning
+17 AstroTech: The Science and Technology behind Astronomical Discovery
+18 Astronomy: Exploring Time and Space
+19 Banking and Financial Institutions
+20 Basic Statistics
+21 Beer Quality: Foam
+22 Brand Identity and Strategy
+23 Brand Management: Aligning Business, Brand and Behaviour
+24 Branding and Customer Experience
+25 Branding for Differential Advantage with Jagdish Sheth
+26 Build Dashboards in Power BI
+27 Build Wireframes and Low-Fidelity Prototypes
+28 Build a Server Rendered Website with Next.js
+29 Building a Business Presence With Facebook Marketing
+30 Business Analytics Executive Overview
+31 Business English: Meetings
+32 Business English: Networking
+33 Business English: Planning & Negotiating
+34 Business Implications of AI: A Nano-course
+35 Business Model Canvas: A Tool for Entrepreneurs and Innovators (Project-Centered Course)
+36 Business Model Innovation
+37 C Programming: Getting Started - 1
+38 C for Everyone: Structured Programming
+39 Capstone: Applying Project Management in the Real World
+40 Career planning: Your career, your life
+41 Cloud Computing Foundations
+42 Coaching Conversations
+43 Coding Interview Preparation
+44 Computer Architecture
+45 Computer Science:  Algorithms, Theory, and Machines
+46 Computer Science: Programming with a Purpose
+47 Concurrent Programming in Java
+48 Conduct UX Research and Test Early Concepts
+49 Connect and Protect: Networks and Network Security
+50 Conversations That Inspire: Coaching Learning, Leadership and Change
+51 Convolutional Neural Networks
+52 Cost and Economics in Pricing Strategy
+53 Country Level Economics: Macroeconomic Variables and Markets
+54 Country Level Economics: Policies, Institutions, and Macroeconomic Performance
+55 Cracking the Creativity Code: Discovering Ideas
+56 Crash Course on Python
+57 Create High-Fidelity Designs and Prototypes in Figma
+58 Create a Mockup in Figma
+59 Create a Profile and Network on LinkedIn
+60 Create a User Journey Map in Miro
+61 Creating a Product-Market Fit with Value Proposition Canvas
+62 Cultural intelligence: Become a global citizen
+63 Customer Centric Innovation
+64 Cybersecurity Roles, Processes & Operating System Security
+65 Data Analysis with Python
+66 Data Analysis with R Programming
+67 Data Analysis with Spreadsheets and SQL
+68 Data Analytics Methods for Marketing
+69 Data Science Methodology
+70 Data Visualization
+71 Data Visualization with Python
+72 Databases and SQL for Data Science with Python
+73 Design Principles: an Introduction
+74 Design Thinking and Global Startup
+75 Design a User Experience for Social Good & Prepare for Jobs
+76 Designing Learning Innovation
+77 Designing User Interfaces and Experiences (UI/UX)
+78 Designing and Implementing Your Coaching Strategy
+79 Designing, Running, and Analyzing Experiments
+80 Detecting COVID-19 with Chest X-Ray using PyTorch
+81 Developing Innovative Ideas for New Companies: The First Step in Entrepreneurship
+82 Developing a Marketing Mix for Growth
+83 Developing a Winning Marketing Strategy
+84 Developing the Opportunity for Corporate Entrepreneurs
+85 Digital Business Models
+86 Digital Transformation
+87 Distributed Programming in Java
+88 Dynamic Programming, Greedy Algorithms
+89 Economics of Money and Banking
+90 Emerging Technology, Disruption, and AI
+91 Emotion AI: Facial Key-points Detection
+92 English for Common Interactions in the Workplace: Basic Level
+93 Entrepreneurial Competencies for Landscape Restoration
+94 Entrepreneurship
+95 Essentials of Entrepreneurship: Thinking & Action
+96 Essentials of Management and Strategic Planning
+97 Ethics, Culture, and Global Perspectives
+98 Excel Fundamentals for Data Analysis
+99 Excel for Beginners: Pivot Tables
+100 Exploratory Data Analysis for Machine Learning
+101 Exploring Emerging Technologies for Lifelong Learning and Success
+102 Facial Keypoint Detection with PyTorch
+103 Ferrous Technology I
+104 Finance for Managers
+105 Finance for Non-Finance Professionals
+106 Finance for Non-Financial Managers
+107 Finance for Non-Financial Professionals
+108 Financial Accounting Fundamentals
+109 Finding Purpose and Meaning In Life: Living for What Matters Most
+110 Firm Level Economics: Consumer and Producer Behavior
+111 First Step Korean
+112 Forecasting Financial Statements & Valuation for Accountants
+113 Foundations of AR
+114 Foundations of Business Intelligence
+115 Foundations of Cybersecurity
+116 Foundations of Data Science
+117 Foundations of Digital Marketing and E-commerce
+118 Foundations of Project Management
+119 Foundations of Teaching for Learning: Introduction to Student Assessment
+120 Foundations of User Experience (UX) Design
+121 Foundations: Data, Data, Everywhere
+122 Fundamentals of International Business
+123 Fundamentals of Management
+124 Game Design and Development 1: 2D Shooter
+125 Generative AI for Everyone
+126 Generative AI with Large Language Models
+127 Get Started with Figma
+128 Get Started with Python
+129 Getting Started With Music Theory
+130 Getting Started with Microsoft PowerPoint
+131 Getting Started with Technology Startups
+132 Global Financial Markets and Instruments
+133 Go Beyond the Numbers: Translate Data into Insights
+134 Google Cloud Big Data and Machine Learning Fundamentals
+135 Google Data Analytics Capstone: Complete a Case Study
+136 Google Docs
+137 Grammar and Punctuation
+138 Groundwork for Success in Sales Development
+139 Hardware Description Languages for FPGA Design
+140 Harnessing the Power of Data with Power BI
+141 How to Finance and Grow Your Startup – Without VC
+142 How to Write a Resume (Project-Centered Course)
+143 Human-Centered Design: an Introduction
+144 Improving Deep Neural Networks: Hyperparameter Tuning, Regularization and Optimization
+145 Industrial Biotechnology
+146 Information Design
+147 Information Technology (IT) Fundamentals for Everyone
+148 Initiating and Planning Projects
+149 Innovation Through Design: Think, Make, Break, Repeat
+150 Innovation: From Creativity to Entrepreneurship Capstone
+151 Innovative Finance: Hacking finance to change the world
+152 Input and Interaction
+153 Instructional Design Foundations and Applications
+154 International Business Context
+155 International Business I
+156 International Business Operations
+157 International Business Venturing Abroad
+158 International Business and Culture
+159 Intro to AR/VR/MR/XR: Technologies, Applications & Issues
+160 Introduction to Agile Development and Scrum
+161 Introduction to Android Mobile Application Development
+162 Introduction to Artificial Intelligence (AI)
+163 Introduction to Back-End Development
+164 Introduction to C# Programming and Unity
+165 Introduction to Cloud Computing
+166 Introduction to Computer Vision and Image Processing
+167 Introduction to Computers and Operating Systems and Security
+168 Introduction to Cybersecurity Essentials
+169 Introduction to Data Analytics
+170 Introduction to Data Science in Python
+171 Introduction to Databases
+172 Introduction to DevOps
+173 Introduction to Docker: Build Your Own Portfolio Site
+174 Introduction to Economic Theories
+175 Introduction to EdTech
+176 Introduction to FPGA Design for Embedded Systems
+177 Introduction to Financial Analysis - The 'Why?'
+178 Introduction to Financial Engineering and Risk Management
+179 Introduction to Front-End Development
+180 Introduction to Generative AI
+181 Introduction to Google SEO
+182 Introduction to HTML5
+183 Introduction to High-Throughput Materials Development
+184 Introduction to Industrial Bioprocess Development
+185 Introduction to Large Language Models
+186 Introduction to Machine Learning
+187 Introduction to Machine Learning in Production
+188 Introduction to Mobile Development
+189 Introduction to MongoDB
+190 Introduction to Personal Finance
+191 Introduction to Philosophy
+192 Introduction to Portfolio Construction and Analysis with Python
+193 Introduction to Project Management
+194 Introduction to Python
+195 Introduction to Risk Management
+196 Introduction to Scrum Master Profession
+197 Introduction to Social Media Marketing
+198 Introduction to Software Engineering
+199 Introduction to Sustainability
+200 Introduction to Systems and Network Mapping with Kumu
+201 Introduction to TensorFlow for Artificial Intelligence, Machine Learning, and Deep Learning
+202 Introduction to the Internet of Things and Embedded Systems
+203 Investment Banking: Financial Analysis and Valuation
+204 IoT Devices
+205 JavaScript Interview Challenges
+206 Leadership and organizational behavior
+207 Leading Teams: Developing as a Leader
+208 Leading for Equity, Diversity and Inclusion in Higher Education
+209 Learning How to Learn: Powerful mental tools to help you master tough subjects
+210 Learning to Teach Online
+211 Linear Algebra for Machine Learning and Data Science
+212 Machine Learning Foundations: A Case Study Approach
+213 Machine Learning for All
+214 Machine Learning: Regression
+215 Magic in the Middle Ages
+216 Make the Sale: Build, Launch, and Manage E-commerce Stores
+217 Managerial Accounting: Cost Behaviors, Systems, and Analysis
+218 Managerial Accounting: Tools for Facilitating and Guiding Business Decisions
+219 Managing Innovation: Ambidexterity, Teams and Leading Change
+220 Managing the Organization
+221 Marketing Analytics Foundation
+222 Marketing Analytics with Meta
+223 Mastering Data Analysis with Pandas
+224 Material Processing
+225 Materials Science: 10 Things Every Engineer Should Know
+226 Mathematical Thinking in Computer Science
+227 Mathematics for Machine Learning: Linear Algebra
+228 Mathematics for Machine Learning: Multivariate Calculus
+229 Mathematics for Machine Learning: PCA
+230 Matrix Algebra for Engineers
+231 Measure and Optimize Social Media Marketing Campaigns
+232 Meta Marketing Science Certification Exam
+233 Microeconomics Principles
+234 Microeconomics: The Power of Markets
+235 Microeconomics: When Markets Fail
+236 Microsoft Power Platform Fundamentals
+237 Miracles of Human Language: An Introduction to Linguistics
+238 Moral Foundations of Politics
+239 Natural Language Processing with Classification and Vector Spaces
+240 Neural Networks and Deep Learning
+241 Numerical Methods for Engineers
+242 OKR Certification: Leadership and Goal Setting
+243 Oil & Gas Industry Operations and Markets
+244 Operating Systems Fundamentals
+245 Operations Management: Organization and Analysis
+246 Operations Management: Quality and Supply Chain
+247 Operations Research (2): Optimization Algorithms
+248 Organisational behaviour: Know your people
+249 Overview of Data Visualization
+250 Parallel Programming in Java
+251 Plastic electronics
+252 Play It Safe: Manage Security Risks
+253 Positive Psychology
+254 Prediction and Control with Function Approximation
+255 Prepare Data for Exploration
+256 Preparing  Data for Analysis with Microsoft Excel
+257 Principles of UX/UI Design
+258 Process Data from Dirty to Clean
+259 Procurement & Sourcing Introduction
+260 Procurement Basics
+261 Professional Skills for International Business
+262 Programming Fundamentals
+263 Programming for Everybody (Getting Started with Python)
+264 Programming in Python
+265 Project Execution: Running the Project
+266 Project Initiation: Starting a Successful Project
+267 Project Planning: Putting It All Together
+268 Project Valuation and the Capital Budgeting Process
+269 Prompt Engineering for ChatGPT
+270 Python Basics
+271 Python Data Analytics
+272 Python Project for Data Science
+273 Python and Statistics for Financial Analysis
+274 Python for Data Science, AI & Development
+275 Qualitative Research Methods
+276 Quantitative Methods
+277 R Programming
+278 React Basics
+279 Recruiting, Hiring, and Onboarding Employees
+280 Relational Database Design
+281 Research Proposal: Initiating Research
+282 Sales and CRM Overview
+283 Satisfaction Guaranteed: Develop Customer Loyalty Online
+284 Sensor Manufacturing and Process Control
+285 Share Data Through the Art of Visualization
+286 Social Computing
+287 Songwriting: Writing the Lyrics
+288 Stability and Capability in Quality Improvement
+289 Start the UX Design Process: Empathize, Define, and Ideate
+290 Startup Valuation Methods
+291 Statistics for Marketing
+292 Storing, Retrieving, and Processing JSON data with Python
+293 Storytelling in Branding and Content Marketing
+294 Strategic Career Self-Management
+295 Strategic Innovation: Building and Sustaining Innovative Organizations
+296 Strategic Innovation: Managing Innovation Initiatives
+297 Strategic Management
+298 Strategic Sourcing
+299 Strategically Build and Engage Your Network on LinkedIn
+300 Successful Negotiation: Essential Strategies and Skills
+301 Supply Chain Analytics Essentials
+302 Supply Chain Logistics
+303 TOEFL Reading and Listening Sections Skills Mastery
+304 Tableau Public for Project Management and Beyond
+305 Technical Support Fundamentals
+306 Technology Strategy: Creative Destruction
+307 Text Mining and Analytics
+308 The 3D Printing Revolution
+309 The Data Scientist’s Toolbox
+310 The Digital Marketing Revolution
+311 The Holocaust - An Introduction (I): Nazi Germany: Ideology, The Jews and the World
+312 The Product Lifecycle: A Guide from start to finish
+313 The Science of Success: What Researchers Know that You Should Know
+314 Think Again I: How to Understand Arguments
+315 Think Outside the Inbox: Email Marketing
+316 Tools for Data Science
+317 Tools of the Trade: Linux and SQL
+318 Typescript - Learn the fundamentals
+319 UX Design Fundamentals
+320 Understanding Financial Statements: Company Position
+321 Understanding Memory: Explaining the Psychology of Memory through Movies
+322 Use Canva to Create Desktop and Mobile-friendly Web Pages.
+323 Use Canva to Create an Interactive Mind Map
+324 User Experience: Research & Prototyping
+325 Using Sensors With Your Raspberry Pi
+326 Utilize LinkedIn for Career Search
+327 Valuation for Startups Using Discounted Cash Flows Approach
+328 Visual Elements of User Interface Design
+329 Web Application Development with JavaScript and MongoDB
+330 What is Data Science?
+331 What is Technology Entrepreneurship and Innovation?
+332 Work Smarter, Not Harder: Time Management for Personal & Professional Productivity
+333 Writing Professional Email and Memos (Project-Centered Course)

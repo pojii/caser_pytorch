@@ -46,6 +46,22 @@ def _compute_precision_recall(targets, predictions, k):
 
     return precision, recall
 
+def _compute_mrr(targets, predictions, k):
+    """
+    Compute the Mean Reciprocal Rank at k.
+    """
+    predictions_at_k = predictions[:k]
+    for i, p in enumerate(predictions_at_k):
+        if p in targets:
+            return 1.0 / (i + 1.0)
+    return 0.0
+
+def _compute_hit_rate(targets, predictions, k):
+    """
+    Compute the Hit Rate at k.
+    """
+    predictions_at_k = predictions[:k]
+    return 1.0 if any(p in targets for p in predictions_at_k) else 0.0
 
 def evaluate_ranking(model, test, train=None, k=10):
     """
@@ -82,6 +98,8 @@ def evaluate_ranking(model, test, train=None, k=10):
     precisions = [list() for _ in range(len(ks))]
     recalls = [list() for _ in range(len(ks))]
     apks = list()
+    mrrs = []
+    hits = []
 
     for user_id in test_users:
         if user_id >= model.test_sequence.sequences.shape[0]:
@@ -125,6 +143,12 @@ def evaluate_ranking(model, test, train=None, k=10):
             precisions[i].append(precision)
             recalls[i].append(recall)
 
+            if _k == 10:  # Compute MRR@10 and Hit@10 for k=10
+                mrr = _compute_mrr(targets, predictions, _k)
+                hit = _compute_hit_rate(targets, predictions, _k)
+                mrrs.append(mrr)
+                hits.append(hit)
+
         apks.append(_compute_apk(targets, predictions, k=np.inf))
 
     precisions = [np.array(i) for i in precisions]
@@ -135,8 +159,10 @@ def evaluate_ranking(model, test, train=None, k=10):
         recalls = recalls[0]
 
     mean_aps = np.mean(apks) if apks else 0.0
+    mean_mrr = np.mean(mrrs) if mrrs else 0.0
+    mean_hit = np.mean(hits) if hits else 0.0
 
     print(f"Processed {len(apks)} valid users out of {test.shape[0]} total users")
 
-    return precisions, recalls, mean_aps
+    return precisions, recalls, mean_aps, mean_mrr, mean_hit
 
