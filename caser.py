@@ -8,7 +8,7 @@ class Caser(nn.Module):
     def __init__(self, num_users, num_items, model_args, muse_dim=512, precomputed_embeddings=None):
         super(Caser, self).__init__()
         self.args = model_args
-        self.precomputed_embeddings = precomputed_embeddings
+        self.precomputed_embeddings = nn.Parameter(torch.tensor(precomputed_embeddings, dtype=torch.float), requires_grad=False)
 
         # Initialize parameters
         L = self.args.L
@@ -23,15 +23,15 @@ class Caser(nn.Module):
         # User embeddings
         self.user_embeddings = nn.Embedding(num_users, self.user_dims)
 
-        # Vertical convolution: kernel size spans the embedding dimension (512) and uses all L
-        self.conv_v = nn.Conv2d(1, self.n_v, (L, 512))
+        # Vertical convolution
+        self.conv_v = nn.Conv2d(1, self.n_v, (L, self.item_dims))
 
-        # Horizontal convolution: kernel size varies across the sequence dimension, but the embedding dimension is fixed at 512
-        self.conv_h = nn.ModuleList([nn.Conv2d(1, self.n_h, (i, 512)) for i in range(1, L + 1)])
+        # Horizontal convolution
+        self.conv_h = nn.ModuleList([nn.Conv2d(1, self.n_h, (i, self.item_dims)) for i in range(1, L + 1)])
 
         # Fully connected layer
-        self.fc1_dim_v = self.n_v * 1  # Vertical output is flattened
-        self.fc1_dim_h = self.n_h * L  # Horizontal output will be concatenated across all filters
+        self.fc1_dim_v = self.n_v * 1
+        self.fc1_dim_h = self.n_h * L
         fc1_dim_in = self.fc1_dim_v + self.fc1_dim_h
         self.fc1 = nn.Linear(fc1_dim_in, self.user_dims)
 
@@ -47,33 +47,20 @@ class Caser(nn.Module):
         self.W2.weight.data.normal_(0, 1.0 / self.W2.embedding_dim)
         self.b2.weight.data.zero_()
 
-    def forward(self, seq_var, user_var, item_var, for_pred=False):
-        # Clamp seq_var to valid indices
-        seq_var = torch.clamp(seq_var, max=self.precomputed_embeddings.size(0) - 1)
-
+    def forward(self, item_seq, user_var, item_var, for_pred=False):
         # Convert user_var and item_var to long before embedding lookup
         user_var = user_var.long()
         item_var = item_var.long()
-
-        # Before indexing into precomputed_embeddings
-        print('seq_var.shape', seq_var.shape)
-        print('seq_var min:', seq_var.min().item(), 'max:', seq_var.max().item())
-
-        # Check the shape of precomputed_embeddings
-        print('precomputed_embeddings.shape', self.precomputed_embeddings.shape)
-
-        # Look up the precomputed embeddings using seq_var
-        item_embs = self.precomputed_embeddings[seq_var]  # [batch_size, L, 512]
-
+        # Look up the precomputed embeddings using item_seq
+        item_embs = self.precomputed_embeddings[item_seq]  # [batch_size, L, 512]
         # Add a channel dimension for the convolutional layers
         item_embs = item_embs.unsqueeze(1)  # [batch_size, 1, L, 512]
+        user_emb = self.user_embeddings(user_var).squeeze(1)
 
-        user_emb = self.user_embeddings(user_var).squeeze(1)  # User embedding -> [batch_size, user_dims]
-
-        # Vertical Convolution: Apply conv_v over the entire embedding dimension
+        # Vertical Convolution
         out_v = self.conv_v(item_embs).view(-1, self.fc1_dim_v) if self.n_v else None  # [batch_size, n_v]
 
-        # Horizontal Convolution: Apply conv_h with varying kernel sizes along the sequence dimension
+        # Horizontal Convolution
         out_hs = []
         for conv in self.conv_h:
             conv_out = self.ac_conv(conv(item_embs)).squeeze(3)  # [batch_size, n_h, L]
@@ -101,4 +88,3 @@ class Caser(nn.Module):
             res = torch.baddbmm(b2, w2, x.unsqueeze(2)).squeeze()
 
         return res
-

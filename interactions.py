@@ -1,12 +1,5 @@
-"""
-Classes describing datasets of user-item interactions. Instances of these
-are returned by dataset-fetching and dataset-processing functions.
-"""
-
 import numpy as np
-
 import scipy.sparse as sp
-
 
 class Interactions(object):
     """
@@ -37,6 +30,7 @@ class Interactions(object):
 
         user_ids = list()
         item_ids = list()
+        
         # read users and items from file
         with open(file_path, 'r') as fin:
             for line in fin:
@@ -70,52 +64,21 @@ class Interactions(object):
         self.test_sequences = None
 
     def __len__(self):
-
         return len(self.user_ids)
-
-    def tocoo(self):
-        """
-        Transform to a scipy.sparse COO matrix.
-        """
-
-        row = self.user_ids
-        col = self.item_ids
-        data = np.ones(len(self))
-
-        return sp.coo_matrix((data, (row, col)),
-                             shape=(self.num_users, self.num_items))
 
     def tocsr(self):
         """
         Transform to a scipy.sparse CSR matrix.
         """
-
-        return self.tocoo().tocsr()
+        row = self.user_ids
+        col = self.item_ids
+        data = np.ones(len(self))
+        return sp.csr_matrix((data, (row, col)),
+                             shape=(self.num_users, self.num_items))
 
     def to_sequence(self, sequence_length=5, target_length=1):
         """
         Transform to sequence form.
-
-        Valid subsequences of users' interactions are returned. For
-        example, if a user interacted with items [1, 2, 3, 4, 5, 6, 7, 8, 9], the
-        returned interactions matrix at sequence length 5 and target length 3
-        will be be given by:
-
-        sequences:
-
-           [[1, 2, 3, 4, 5],
-            [2, 3, 4, 5, 6],
-            [3, 4, 5, 6, 7]]
-
-        targets:
-
-           [[6, 7],
-            [7, 8],
-            [8, 9]]
-
-        sequence for test (the last 'sequence_length' items of each user's sequence):
-
-        [[5, 6, 7, 8, 9]]
 
         Parameters
         ----------
@@ -126,13 +89,6 @@ class Interactions(object):
         target_length: int
             Sequence target length.
         """
-
-        # change the item index start from 1 as 0 is used for padding in sequences
-        for k, v in self.item_map.items():
-            self.item_map[k] = v + 1
-        self.item_ids = self.item_ids + 1
-        self.num_items += 1
-
         max_sequence_length = sequence_length + target_length
 
         # Sort first by user id
@@ -173,9 +129,16 @@ class Interactions(object):
             sequences[i][:] = item_seq[:sequence_length]
             sequence_users[i] = uid
 
+        # Filter out sequences that are all zeros or targets that are all zeros
+        valid_indices = np.where((sequences != 0).any(axis=1) & (sequences_targets != 0).any(axis=1))[0]
+        sequences = sequences[valid_indices]
+        sequences_targets = sequences_targets[valid_indices]
+        sequence_users = sequence_users[valid_indices]
+
         self.sequences = SequenceInteractions(sequence_users, sequences, sequences_targets)
         self.test_sequences = SequenceInteractions(test_users, test_sequences)
 
+        print(f"Total sequences after filtering: {len(sequences)}")
 
 class SequenceInteractions(object):
     """
@@ -205,20 +168,6 @@ class SequenceInteractions(object):
         if np.any(targets):
             self.T = targets.shape[1]
 
-
-def _sliding_window(tensor, window_size, step_size=1):
-    if len(tensor) - window_size >= 0:
-        for i in range(len(tensor), 0, -step_size):
-            if i - window_size >= 0:
-                yield tensor[i - window_size:i]
-            else:
-                break
-    else:
-        num_paddings = window_size - len(tensor)
-        # Pad sequence with 0s if it is shorter than windows size.
-        yield np.pad(tensor, (num_paddings, 0), 'constant')
-
-
 def _generate_sequences(user_ids, item_ids,
                         indices,
                         max_sequence_length):
@@ -234,3 +183,15 @@ def _generate_sequences(user_ids, item_ids,
         for seq in _sliding_window(item_ids[start_idx:stop_idx],
                                    max_sequence_length):
             yield (user_ids[i], seq)
+
+def _sliding_window(tensor, window_size, step_size=1):
+    if len(tensor) - window_size >= 0:
+        for i in range(len(tensor), 0, -step_size):
+            if i - window_size >= 0:
+                yield tensor[i - window_size:i]
+            else:
+                break
+    else:
+        num_paddings = window_size - len(tensor)
+        # Pad sequence with 0s if it is shorter than windows size.
+        yield np.pad(tensor, (num_paddings, 0), 'constant')

@@ -73,9 +73,8 @@ class Recommender(object):
 
     def fit(self, train, test, verbose=False):
         """
-        The general training loop to fit the model
+        The general training loop to fit the model without using minibatches
         """
-
         # Convert to sequences, targets, and users
         sequences_np = train.sequences.sequences
         targets_np = train.sequences.targets
@@ -93,7 +92,6 @@ class Recommender(object):
         start_epoch = 0
 
         for epoch_num in range(start_epoch, self._n_iter):
-
             t1 = time()
 
             # Set model to training mode
@@ -104,45 +102,36 @@ class Recommender(object):
             negatives_np = self._generate_negative_samples(users_np, train, n=self._neg_samples)
 
             # Convert numpy arrays to PyTorch tensors and move them to the corresponding devices
-            users, sequences, targets, negatives = (torch.from_numpy(users_np).long(),
-                                                    torch.from_numpy(sequences_np).long(),
-                                                    torch.from_numpy(targets_np).long(),
-                                                    torch.from_numpy(negatives_np).long())
+            users = torch.from_numpy(users_np).long().to(self._device)
+            sequences = torch.from_numpy(sequences_np).long().to(self._device)
+            targets = torch.from_numpy(targets_np).long().to(self._device)
+            negatives = torch.from_numpy(negatives_np).long().to(self._device)
 
-            users, sequences, targets, negatives = (users.to(self._device),
-                                                    sequences.to(self._device),
-                                                    targets.to(self._device),
-                                                    negatives.to(self._device))
+            items_to_predict = torch.cat((targets, negatives), 1)
+            items_prediction = self._net(sequences, users, items_to_predict)
 
-            epoch_loss = 0.0
+            targets_prediction, negatives_prediction = torch.split(items_prediction, [targets.size(1), negatives.size(1)], dim=1)
 
-            for minibatch_num, (batch_users, batch_sequences, batch_targets, batch_negatives) in enumerate(minibatch(users, sequences, targets, negatives, batch_size=self._batch_size)):
-                items_to_predict = torch.cat((batch_targets, batch_negatives), 1)
-                items_prediction = self._net(batch_sequences, batch_users, items_to_predict)
+            self._optimizer.zero_grad()
+            
+            # Compute the binary cross-entropy loss
+            positive_loss = -torch.mean(torch.log(torch.sigmoid(targets_prediction)))
+            negative_loss = -torch.mean(torch.log(1 - torch.sigmoid(negatives_prediction)))
+            loss = positive_loss + negative_loss
 
-                targets_prediction, negatives_prediction = torch.split(items_prediction, [batch_targets.size(1), batch_negatives.size(1)], dim=1)
+            loss.backward()
+            self._optimizer.step()
 
-                self._optimizer.zero_grad()
-                
-                # Compute the binary cross-entropy loss
-                positive_loss = -torch.mean(torch.log(torch.sigmoid(targets_prediction)))
-                negative_loss = -torch.mean(torch.log(1 - torch.sigmoid(negatives_prediction)))
-                loss = positive_loss + negative_loss
-
-                epoch_loss += loss.item()
-
-                loss.backward()
-                self._optimizer.step()
-
-            epoch_loss /= minibatch_num + 1
+            epoch_loss = loss.item()
 
             t2 = time()
             if verbose and (epoch_num + 1) % 10 == 0:
-                precision, recall, mean_aps = evaluate_ranking(self, test, train, k=[1, 5, 10])
-                print(f"Epoch {epoch_num + 1} [{t2 - t1:.1f} s]\tloss={epoch_loss:.4f}, map={mean_aps:.4f}, "
-                      f"prec@1={np.mean(precision[0]):.4f}, prec@5={np.mean(precision[1]):.4f}, "
-                      f"prec@10={np.mean(precision[2]):.4f}, recall@1={np.mean(recall[0]):.4f}, "
-                      f"recall@5={np.mean(recall[1])::.4f}, recall@10={np.mean(recall[2]):.4f}, [{time() - t2:.1f} s]")
+                precision, recall, mean_aps, mean_mrr, mean_hit = evaluate_ranking(self, test, train, k=[1, 5, 10])
+                print(f"Epoch {epoch_num + 1} [{t2 - t1:.1f} s]\t"
+                    f"loss={epoch_loss:.4f}, MAP={mean_aps:.4f}, MRR@10={mean_mrr:.4f}, HR@10={mean_hit:.4f}\n"
+                    f"Precision: @1={np.mean(precision[0]):.4f}, @5={np.mean(precision[1]):.4f}, @10={np.mean(precision[2]):.4f}\n"
+                    f"Recall: @1={np.mean(recall[0]):.4f}, @5={np.mean(recall[1]):.4f}, @10={np.mean(recall[2]):.4f}\n"
+                    f"[{time() - t2:.1f} s]")
             else:
                 print(f"Epoch {epoch_num + 1} [{t2 - t1:.1f} s]\tloss={epoch_loss:.4f} [{time() - t2:.1f} s]")
 
@@ -197,12 +186,12 @@ class Recommender(object):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Data arguments
-    parser.add_argument('--train_root', type=str, default='datasets/ml1m/test/train.txt')
-    parser.add_argument('--test_root', type=str, default='datasets/ml1m/test/test.txt')
+    parser.add_argument('--train_root', type=str, default='datasets/coursera/train.txt')
+    parser.add_argument('--test_root', type=str, default='datasets/coursera/test.txt')
     parser.add_argument('--L', type=int, default=5)
     parser.add_argument('--T', type=int, default=3)
     # Train arguments
-    parser.add_argument('--n_iter', type=int, default=50)
+    parser.add_argument('--n_iter', type=int, default=1000)
     parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--learning_rate', type=float, default=1e-3)
@@ -230,11 +219,24 @@ if __name__ == '__main__':
     # Load dataset
     train = Interactions(config.train_root)
     train.to_sequence(config.L, config.T)
+    sequences = train.sequences.sequences
+    targets = train.sequences.targets
+
+    # Sample and print 10 random sequences and targets
+    num_samples = min(10, len(sequences))  # In case there are fewer than 10 sequences
+    sample_indices = np.random.choice(len(sequences), num_samples, replace=False)
+    
+    print(f"Displaying {num_samples} randomly sampled sequences and targets:")
+    for i, idx in enumerate(sample_indices):
+        print(f"Sample {i+1}:")
+        print(f"Sequence: {sequences[idx]}")
+        print(f"Target: {targets[idx]}")
+        print()
 
     test = Interactions(config.test_root, user_map=train.user_map, item_map=train.item_map)
 
     # Load precomputed embeddings
-    precomputed_embeddings = np.load("course_embeddings.npy")
+    precomputed_embeddings = np.load("precomputed_embeddings.npy")
 
     print(config)
     print(model_config)

@@ -70,6 +70,14 @@ class Caser(nn.Module):
 
         # Replace out-of-bound embeddings with zeros
         item_embs = item_embs * valid_mask.unsqueeze(-1)
+  
+        # Pad item_embs if necessary
+        if item_embs.shape[1] < self.args.L:
+            padding = torch.zeros(item_embs.shape[0], self.args.L - item_embs.shape[1], self.item_dims, device=item_embs.device)
+            item_embs = torch.cat([item_embs, padding], dim=1)
+        elif item_embs.shape[1] > self.args.L:
+            item_embs = item_embs[:, :self.args.L, :]
+        
 
         # Add a channel dimension for the convolutional layers
         item_embs = item_embs.unsqueeze(1)  # [batch_size, 1, L, 512]
@@ -355,14 +363,6 @@ class Recommender(object):
         print(f"Top {top_k} Predicted Courses: {top_predictions}")
 
 def test_all_users(model, top_k=10, course_map=None):
-    """
-    Test the model with all users in the test set, showing actual vs. predicted courses.
-    
-    Parameters:
-    - model: The trained model
-    - top_k: Number of top predictions to show
-    - course_map: Dictionary mapping course numbers to course names
-    """
     num_users = len(model.test_sequence.sequences)
     
     for user_id in range(num_users):
@@ -372,12 +372,12 @@ def test_all_users(model, top_k=10, course_map=None):
         top_predictions = np.argsort(-predicted_scores)[:top_k]
 
         # Convert course numbers to names using the course_map
-        actual_course_names = [course_map.get(course, f"Course {course}") for course in actual_courses if course in course_map]
-        predicted_course_names = [course_map.get(course, f"Course {course}") for course in top_predictions if course in course_map]
+        actual_course_names = [course_map.get(course, f"Course {course}") for course in actual_courses if course != 0]  # Ignore padding
+        predicted_course_names = [course_map.get(course, f"Course {course}") for course in top_predictions]
 
         print(f"--- User ID: {user_id} ---")
         print(f"Actual Courses: {', '.join(actual_course_names) if actual_course_names else 'No actual courses found'}")
-        print(f"Top {top_k} Predicted Courses: {', '.join(predicted_course_names) if predicted_course_names else 'No predicted courses found'}\n")
+        print(f"Top {top_k} Predicted Courses: {', '.join(predicted_course_names)}\n")
 
 def load_course_map(course_map_path):
     course_map = {}
@@ -386,15 +386,21 @@ def load_course_map(course_map_path):
             line = line.strip()
             if line:
                 parts = line.split(' ', 1)
-                course_num = int(parts[0])
+                course_num = int(parts[0]) + 1  # Add 1 to course_num
                 course_name = parts[1]
                 course_map[course_num] = course_name
     return course_map
 
+def print_raw_data_sample(file_path, num_lines=10):
+    with open(file_path, 'r') as f:
+        for i, line in enumerate(f):
+            if i >= num_lines:
+                break
+            print(f"Line {i+1}: {line.strip()}")
+
 if __name__ == '__main__':
-    # Load dataset and course mappings
-    train_root = 'datasets/ml1m/test/train.txt'
-    test_root = 'datasets/ml1m/test/test.txt'
+    train_root = 'datasets/coursera/train.txt'
+    test_root = 'datasets/coursera/test.txt'
     course_map_path = rf'datasets/coursera/text.txt'  # Path to the course number to name mapping
 
     course_map = load_course_map(course_map_path)
@@ -404,8 +410,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     # Data arguments
-    parser.add_argument('--train_root', type=str, default='datasets/ml1m/test/train.txt')
-    parser.add_argument('--test_root', type=str, default='datasets/ml1m/test/test.txt')
+    parser.add_argument('--train_root', type=str, default='datasets/coursera/train.txt')
+    parser.add_argument('--test_root', type=str, default='datasets/coursera/test.txt')
     parser.add_argument('--L', type=int, default=5)
     parser.add_argument('--T', type=int, default=3)
     # Train arguments
@@ -460,7 +466,7 @@ if __name__ == '__main__':
     model.fit(train, test, verbose=True)
 
     # Save the trained model
-    model.save_model('trained_caser_model.pkl')
+    # model.save_model('trained_caser_model.pkl')
 
 
     # Sample test with a specific user
@@ -468,6 +474,6 @@ if __name__ == '__main__':
     # model.sample_test(user_id=sample_user_id, top_k=10)
 
     # Load the model and test again to ensure everything works
-    model.load_model('trained_caser_model.pkl')
+    # model.load_model('trained_caser_model.pkl')
     # Test all users and show actual vs. predicted courses
     test_all_users(model, top_k=10, course_map=course_map)
