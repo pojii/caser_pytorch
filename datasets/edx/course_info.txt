@@ -1,0 +1,18 @@
+HarvardX/PH278x/2013_Spring	Human Health and Global Environmental
+MITx/14.73x/2013_Spring	The Challenges of Global Poverty
+HarvardX/CS50x/2012	Introduction to Computer Science
+HarvardX/ER22x/2013_Spring	JusticeX
+HarvardX/CB22x/2013_Spring	The Ancient Greek Hero
+MITx/6.00x/2012_Fall	Introduction to Computer
+Science and Programming Fall
+MITx/6.00x/2013_Spring	Introduction to Computer
+Science and Programming Spring
+MITx/6.002x/2013_Spring	Circuits and Electronics Spring
+MITx/8.02x/2013_Spring	Electricity and Magnetism
+MITx/7.00x/2013_Spring	Introduction to Biology
+HarvardX/PH207x/2012_Fall	Health in Numbers: Quantitative Methods in Clinical & Public Health Research
+MITx/3.091x/2012_Fall	Introduction to Solid State Chemistry Fall
+MITx/2.01x/2013_Spring	Elements of Structures
+MITx/6.002x/2012_Fall	Circuits and Electronics Fall
+MITx/3.091x/2013_Spring	Introduction to Solid State Chemistry Spring
+MITx/8.MReV/2013_Summer	Mechanics Review

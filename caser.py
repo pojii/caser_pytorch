@@ -8,35 +8,35 @@ class Caser(nn.Module):
     def __init__(self, num_users, num_items, model_args, muse_dim=512, precomputed_embeddings=None):
         super(Caser, self).__init__()
         self.args = model_args
-        self.precomputed_embeddings = nn.Parameter(torch.tensor(precomputed_embeddings, dtype=torch.float), requires_grad=False)
+        self.num_items = num_items
+        self.item_dims = muse_dim
+        self.user_dims = model_args.d
+        self.n_h = model_args.nh
+        self.n_v = model_args.nv
+        self.drop_ratio = model_args.drop
+        self.ac_conv = activation_getter[model_args.ac_conv]
+        self.ac_fc = activation_getter[model_args.ac_fc]
 
-        # Initialize parameters
-        L = self.args.L
-        self.user_dims = model_args.d  # User embedding dimensions
-        self.item_dims = muse_dim  # Sentence embedding dimensions (512)
-        self.n_h = self.args.nh  # Number of horizontal convolutional filters
-        self.n_v = self.args.nv  # Number of vertical convolutional filters
-        self.drop_ratio = self.args.drop  # Dropout ratio
-        self.ac_conv = activation_getter[self.args.ac_conv]  # Convolutional activation function
-        self.ac_fc = activation_getter[self.args.ac_fc]  # Fully connected layer activation function
+        # Initialize precomputed embeddings
+        self.precomputed_embeddings = self._initialize_embeddings(num_items, precomputed_embeddings)
 
         # User embeddings
         self.user_embeddings = nn.Embedding(num_users, self.user_dims)
 
         # Vertical convolution
-        self.conv_v = nn.Conv2d(1, self.n_v, (L, self.item_dims))
+        self.conv_v = nn.Conv2d(1, self.n_v, (self.args.L, self.item_dims))
 
         # Horizontal convolution
-        self.conv_h = nn.ModuleList([nn.Conv2d(1, self.n_h, (i, self.item_dims)) for i in range(1, L + 1)])
+        self.conv_h = nn.ModuleList([nn.Conv2d(1, self.n_h, (i, self.item_dims)) for i in range(1, self.args.L + 1)])
 
         # Fully connected layer
         self.fc1_dim_v = self.n_v * 1
-        self.fc1_dim_h = self.n_h * L
+        self.fc1_dim_h = self.n_h * self.args.L
         fc1_dim_in = self.fc1_dim_v + self.fc1_dim_h
         self.fc1 = nn.Linear(fc1_dim_in, self.user_dims)
 
         # Output layer
-        self.W2 = nn.Embedding(num_items, self.user_dims + self.user_dims)
+        self.W2 = nn.Embedding(num_items, self.user_dims * 2)
         self.b2 = nn.Embedding(num_items, 1)
 
         # Dropout layer
@@ -47,14 +47,31 @@ class Caser(nn.Module):
         self.W2.weight.data.normal_(0, 1.0 / self.W2.embedding_dim)
         self.b2.weight.data.zero_()
 
+    def _initialize_embeddings(self, num_items, precomputed_embeddings):
+        if precomputed_embeddings is None:
+            return nn.Parameter(torch.randn(num_items, self.item_dims), requires_grad=False)
+        if precomputed_embeddings.shape[0] != num_items:
+            print(f"Adjusting precomputed embeddings from {precomputed_embeddings.shape[0]} to {num_items} items")
+            new_embeddings = torch.zeros((num_items, precomputed_embeddings.shape[1]), dtype=torch.float)
+            new_embeddings[:min(num_items, precomputed_embeddings.shape[0])] = precomputed_embeddings[:min(num_items, precomputed_embeddings.shape[0])]
+            return nn.Parameter(new_embeddings, requires_grad=False)
+        return nn.Parameter(torch.tensor(precomputed_embeddings, dtype=torch.float), requires_grad=False)
+
+
     def forward(self, item_seq, user_var, item_var, for_pred=False):
         # Convert user_var and item_var to long before embedding lookup
         user_var = user_var.long()
         item_var = item_var.long()
+
         # Look up the precomputed embeddings using item_seq
-        item_embs = self.precomputed_embeddings[item_seq]  # [batch_size, L, 512]
-        # Add a channel dimension for the convolutional layers
-        item_embs = item_embs.unsqueeze(1)  # [batch_size, 1, L, 512]
+        item_embs = self.precomputed_embeddings[item_seq]  # Expected [batch_size, L, d]
+        
+        
+        if len(item_embs.shape) == 3:
+            item_embs = item_embs.unsqueeze(1)
+        
+        
+        
         user_emb = self.user_embeddings(user_var).squeeze(1)
 
         # Vertical Convolution
@@ -64,21 +81,26 @@ class Caser(nn.Module):
         out_hs = []
         for conv in self.conv_h:
             conv_out = self.ac_conv(conv(item_embs)).squeeze(3)  # [batch_size, n_h, L]
+            
             pool_out = F.max_pool1d(conv_out, conv_out.size(2)).squeeze(2)  # [batch_size, n_h]
+            
             out_hs.append(pool_out)
 
         out_h = torch.cat(out_hs, 1) if self.n_h else None  # Concatenate all horizontal conv outputs [batch_size, n_h * L]
-
+        
         # Fully connected layer
         out = torch.cat([out_v, out_h], 1) if out_v is not None and out_h is not None else out_v or out_h
         out = self.dropout(out)
         z = self.ac_fc(self.fc1(out))
+        
 
         # Combine user embeddings with fully connected layer output
         x = torch.cat([z, user_emb], 1)  # [batch_size, user_dims + user_dims]
+       
 
         w2 = self.W2(item_var)
         b2 = self.b2(item_var)
+        
 
         if for_pred:
             w2 = w2.squeeze()
@@ -88,3 +110,32 @@ class Caser(nn.Module):
             res = torch.baddbmm(b2, w2, x.unsqueeze(2)).squeeze()
 
         return res
+
+
+
+    def update_item_count(self, new_num_items):
+        if new_num_items != self.num_items:
+            print(f"Updating item count from {self.num_items} to {new_num_items}")
+            self.num_items = new_num_items
+            
+            # Update precomputed embeddings
+            old_embeddings = self.precomputed_embeddings.data
+            new_embeddings = torch.zeros((new_num_items, old_embeddings.shape[1]), dtype=torch.float)
+            new_embeddings[:min(new_num_items, old_embeddings.shape[0])] = old_embeddings[:min(new_num_items, old_embeddings.shape[0])]
+            self.precomputed_embeddings = nn.Parameter(new_embeddings, requires_grad=False)
+            
+            # Update W2 and b2
+            old_W2 = self.W2.weight.data
+            new_W2 = torch.zeros((new_num_items, old_W2.shape[1]))
+            new_W2[:min(new_num_items, old_W2.shape[0])] = old_W2[:min(new_num_items, old_W2.shape[0])]
+            self.W2 = nn.Embedding(new_num_items, self.user_dims + self.user_dims)
+            self.W2.weight.data = new_W2
+
+            old_b2 = self.b2.weight.data
+            new_b2 = torch.zeros((new_num_items, old_b2.shape[1]))
+            new_b2[:min(new_num_items, old_b2.shape[0])] = old_b2[:min(new_num_items, old_b2.shape[0])]
+            self.b2 = nn.Embedding(new_num_items, 1)
+            self.b2.weight.data = new_b2
+
+    def get_item_count(self):
+        return self.num_items

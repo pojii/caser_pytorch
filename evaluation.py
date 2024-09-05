@@ -103,7 +103,7 @@ def evaluate_ranking(model, test, train=None, k=10):
 
     for user_id in test_users:
         if user_id >= model.test_sequence.sequences.shape[0]:
-            print(f"Skipping user_id {user_id} as it's out of bounds for test_sequence")
+            # print(f"Skipping user_id {user_id} as it's out of bounds for test_sequence")
             continue
         
         if train is not None and user_id >= train.shape[0]:

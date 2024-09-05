@@ -191,7 +191,7 @@ if __name__ == '__main__':
     parser.add_argument('--L', type=int, default=5)
     parser.add_argument('--T', type=int, default=3)
     # Train arguments
-    parser.add_argument('--n_iter', type=int, default=1000)
+    parser.add_argument('--n_iter', type=int, default=200)
     parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--learning_rate', type=float, default=1e-3)
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     test = Interactions(config.test_root, user_map=train.user_map, item_map=train.item_map)
 
     # Load precomputed embeddings
-    precomputed_embeddings = np.load("precomputed_embeddings.npy")
+    precomputed_embeddings = np.load("datasets\coursera\precomputed_embeddings.npy")
 
     print(config)
     print(model_config)

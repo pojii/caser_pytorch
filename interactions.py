@@ -18,7 +18,7 @@ class Interactions(object):
                  user_map=None,
                  item_map=None):
 
-        if not user_map and not item_map:
+        if not user_map or not item_map:
             user_map = dict()
             item_map = dict()
 
@@ -26,6 +26,7 @@ class Interactions(object):
             num_item = 0
         else:
             num_user = len(user_map)
+            print('item_map',item_map)
             num_item = len(item_map)
 
         user_ids = list()
