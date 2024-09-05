@@ -4,3 +4,7 @@
 caser_venv_py39/
 edx_caser.pkl
 edx_pretrained_model.pth
+datasets/thairobotics/combined_output.csv
+datasets/coursera/usage-report.csv
+datasets/coursera/filtered_usage_course.csv
+datasets/coursera/merged_usage_course.csv

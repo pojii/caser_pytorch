@@ -1,0 +1,362 @@
+[
+    {
+        "course_name": "Support Vector Machine",
+        "course_category": "Computer Science AI",
+        "post_id": "10659",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Dimensionality Reduction",
+        "course_category": "Computer Science AI",
+        "post_id": "10620",
+        "status": "level-0"
+    },
+    {
+        "course_name": "PRE – TEST RAC 2566",
+        "course_category": "Talent RAC",
+        "post_id": "10586",
+        "status": "level-0"
+    },
+    {
+        "course_name": "การใช้เครื่องมือเบื้องต้น (Basic Tools)",
+        "course_category": "Others, Talent RAC",
+        "post_id": "10274",
+        "status": "level-0"
+    },
+    {
+        "course_name": "ทดสอบระบบ",
+        "course_category": "Others",
+        "post_id": "9891",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Introduction to Augmented Reality",
+        "course_category": "Augmented Reality, Talent RAC",
+        "post_id": "9631",
+        "status": "level-0"
+    },
+    {
+        "course_name": "3D Design with Onshape",
+        "course_category": "Talent RAC",
+        "post_id": "9644",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Basic Actuator in Robotics",
+        "course_category": "Talent RAC",
+        "post_id": "9414",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Robotic Automation Systems (PLC)",
+        "course_category": "Industrial, Talent RAC",
+        "post_id": "9534",
+        "status": "level-0"
+    },
+    {
+        "course_name": "MQTT for Beginner",
+        "course_category": "Internet of Things, Talent RAC",
+        "post_id": "9487",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Engineering Circuit Analysis",
+        "course_category": "Electronics, Talent RAC",
+        "post_id": "9482",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Internet of Things Applications",
+        "course_category": "Internet of Things, Talent RAC",
+        "post_id": "9381",
+        "status": "level-0"
+    },
+    {
+        "course_name": "You Only Look Once (YOLO): Unified, Real-Time Object Detection",
+        "course_category": "Computer Science AI",
+        "post_id": "8991",
+        "status": "level-0"
+    },
+    {
+        "course_name": "แนวทางการเขียนโปรแกรมควบคุมหุ่นยนต์แขนกลโดยคำนึงถึงความปลอดภัย",
+        "course_category": "Industrial",
+        "post_id": "9353",
+        "status": "level-0"
+    },
+    {
+        "course_name": "เทคโนโลยีหุ่นยนต์เบื้องต้น",
+        "course_category": "Special",
+        "post_id": "9109",
+        "status": "level-0"
+    },
+    {
+        "course_name": "ความรู้ทั่วไปเกี่ยวกับ Smart Factory สำหรับบุคคลทั่วไป",
+        "course_category": "Industrial",
+        "post_id": "6399",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Introduction to Machine Learning and RapidMiner",
+        "course_category": "Computer Science AI",
+        "post_id": "8825",
+        "status": "level-0"
+    },
+    {
+        "course_name": "A Survey of Optimizers for Neural Networks and Deep Learning",
+        "course_category": "Computer Science AI",
+        "post_id": "8754",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Image Processing",
+        "course_category": "Computer Science AI",
+        "post_id": "8174",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Introduction to 3D Design and Printing",
+        "course_category": "Mechanics, Tele3DPrint",
+        "post_id": "7853",
+        "status": "level-0"
+    },
+    {
+        "course_name": "ประเภทของระบบเบื้องต้นในวิทยาการหุ่นยนต์",
+        "course_category": "Modelling & Controls",
+        "post_id": "7587",
+        "status": "level-0"
+    },
+    {
+        "course_name": "สัญญาณเบื้องต้นในวิทยาการหุ่นยนต์",
+        "course_category": "Modelling & Controls",
+        "post_id": "7464",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Fundamental Mathematics for Robotics (Ordinary Differential Equations)",
+        "course_category": "Computer Science AI",
+        "post_id": "7470",
+        "status": "level-0"
+    },
+    {
+        "course_name": "การสั่งงานระบบสาธิตการบรรจุภัณฑ์จากระยะไกล",
+        "course_category": "Industrial",
+        "post_id": "7380",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Object Localization Using Gradient-Weighted Class Activation Mapping (Grad-CAM)",
+        "course_category": "Computer Science AI",
+        "post_id": "6985",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Introduction to Deep Learning for Sequential Data",
+        "course_category": "Computer Science AI",
+        "post_id": "6871",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Introduction to Neural Networks and How it Learns ?",
+        "course_category": "Computer Science AI",
+        "post_id": "6845",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Introduction to Robotics",
+        "course_category": "Others",
+        "post_id": "6170",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Foundation of Robotics",
+        "course_category": "Modelling & Controls",
+        "post_id": "5709",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Industrial Sensors and Actuators",
+        "course_category": "Industrial",
+        "post_id": "5879",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Solidworks จากพื้นฐานสู่มืออาชีพ",
+        "course_category": "Mechanics",
+        "post_id": "5727",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Software Development",
+        "course_category": "Computer Science AI",
+        "post_id": "6110",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Deep Learning for Image Classification",
+        "course_category": "Computer Science AI",
+        "post_id": "6061",
+        "status": "level-0"
+    },
+    {
+        "course_name": "PLC for Industrial Robots",
+        "course_category": "Industrial",
+        "post_id": "5814",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Rigid Body Mechanics",
+        "course_category": "Mechanics",
+        "post_id": "5583",
+        "status": "level-0"
+    },
+    {
+        "course_name": "FIBO Talk Series Season 3",
+        "course_category": "Others",
+        "post_id": "7646",
+        "status": "level-0"
+    },
+    {
+        "course_name": "FIBO Talk Series Season 2",
+        "course_category": "Others",
+        "post_id": "7618",
+        "status": "level-0"
+    },
+    {
+        "course_name": "FIBO Talk Series Season 1",
+        "course_category": "Others",
+        "post_id": "7615",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Workshop การออกแบบป้ายชื่อ ด้วย TinkerCAD 17-18 กันยายน 2565",
+        "course_category": "—No categories",
+        "post_id": "9314",
+        "status": "level-0"
+    },
+    {
+        "course_name": "ต่อยอดและเริ่มต้นการออกแบบหุ่นยนต์เคลื่อนที่บนพื้นดิน",
+        "course_category": "Mechanics, Modelling & Controls, Others",
+        "post_id": "6742",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Support Vector Machine",
+        "course_category": "Computer Science AI",
+        "post_id": "10659",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Dimensionality Reduction",
+        "course_category": "Computer Science AI",
+        "post_id": "10620",
+        "status": "level-0"
+    },
+    {
+        "course_name": "PRE – TEST RAC 2566",
+        "course_category": "Talent RAC",
+        "post_id": "10586",
+        "status": "level-0"
+    },
+    {
+        "course_name": "การใช้เครื่องมือเบื้องต้น (Basic Tools)",
+        "course_category": "Others, Talent RAC",
+        "post_id": "10274",
+        "status": "level-0"
+    },
+    {
+        "course_name": "ทดสอบระบบ",
+        "course_category": "Others",
+        "post_id": "9891",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Introduction to Augmented Reality",
+        "course_category": "Augmented Reality, Talent RAC",
+        "post_id": "9631",
+        "status": "level-0"
+    },
+    {
+        "course_name": "3D Design with Onshape",
+        "course_category": "Talent RAC",
+        "post_id": "9644",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Basic Actuator in Robotics",
+        "course_category": "Talent RAC",
+        "post_id": "9414",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Robotic Automation Systems (PLC)",
+        "course_category": "Industrial, Talent RAC",
+        "post_id": "9534",
+        "status": "level-0"
+    },
+    {
+        "course_name": "MQTT for Beginner",
+        "course_category": "Internet of Things, Talent RAC",
+        "post_id": "9487",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Engineering Circuit Analysis",
+        "course_category": "Electronics, Talent RAC",
+        "post_id": "9482",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Internet of Things Applications",
+        "course_category": "Internet of Things, Talent RAC",
+        "post_id": "9381",
+        "status": "level-0"
+    },
+    {
+        "course_name": "You Only Look Once (YOLO): Unified, Real-Time Object Detection",
+        "course_category": "Computer Science AI",
+        "post_id": "8991",
+        "status": "level-0"
+    },
+    {
+        "course_name": "แนวทางการเขียนโปรแกรมควบคุมหุ่นยนต์แขนกลโดยคำนึงถึงความปลอดภัย",
+        "course_category": "Industrial",
+        "post_id": "9353",
+        "status": "level-0"
+    },
+    {
+        "course_name": "เทคโนโลยีหุ่นยนต์เบื้องต้น",
+        "course_category": "Special",
+        "post_id": "9109",
+        "status": "level-0"
+    },
+    {
+        "course_name": "ความรู้ทั่วไปเกี่ยวกับ Smart Factory สำหรับบุคคลทั่วไป",
+        "course_category": "Industrial",
+        "post_id": "6399",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Introduction to Machine Learning and RapidMiner",
+        "course_category": "Computer Science AI",
+        "post_id": "8825",
+        "status": "level-0"
+    },
+    {
+        "course_name": "A Survey of Optimizers for Neural Networks and Deep Learning",
+        "course_category": "Computer Science AI",
+        "post_id": "8754",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Image Processing",
+        "course_category": "Computer Science AI",
+        "post_id": "8174",
+        "status": "level-0"
+    },
+    {
+        "course_name": "Introduction to 3D Design and Printing",
+        "course_category": "Mechanics, Tele3DPrint",
+        "post_id": "7853",
+        "status": "level-0"
+    }
+]

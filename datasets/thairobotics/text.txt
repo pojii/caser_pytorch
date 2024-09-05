@@ -1,0 +1,49 @@
+0 Support Vector Machine
+1 Dimensionality Reduction
+2 PRE – TEST RAC 2566
+3 การใช้เครื่องมือเบื้องต้น (Basic Tools)
+4 ทดสอบระบบ
+5 Introduction to Augmented Reality
+6 3D Design with Onshape
+7 Basic Actuator in Robotics
+8 Robotic Automation Systems (PLC)
+9 MQTT for Beginner
+10 Engineering Circuit Analysis
+11 Internet of Things Applications
+12 You Only Look Once (YOLO): Unified, Real-Time Object Detection
+13 แนวทางการเขียนโปรแกรมควบคุมหุ่นยนต์แขนกลโดยคำนึงถึงความปลอดภัย
+14 เทคโนโลยีหุ่นยนต์เบื้องต้น
+15 ความรู้ทั่วไปเกี่ยวกับ Smart Factory สำหรับบุคคลทั่วไป
+16 Introduction to Machine Learning and RapidMiner
+17 A Survey of Optimizers for Neural Networks and Deep Learning
+18 Image Processing
+19 Introduction to 3D Design and Printing
+20 ประเภทของระบบเบื้องต้นในวิทยาการหุ่นยนต์
+21 สัญญาณเบื้องต้นในวิทยาการหุ่นยนต์
+22 Fundamental Mathematics for Robotics (Ordinary Differential Equations)
+23 การสั่งงานระบบสาธิตการบรรจุภัณฑ์จากระยะไกล
+24 Object Localization Using Gradient-Weighted Class Activation Mapping (Grad-CAM)
+25 Introduction to Deep Learning for Sequential Data
+26 Introduction to Neural Networks and How it Learns ?
+27 Introduction to Robotics
+28 Foundation of Robotics
+29 Industrial Sensors and Actuators
+30 Solidworks จากพื้นฐานสู่มืออาชีพ
+31 Software Development
+32 Deep Learning for Image Classification
+33 PLC for Industrial Robots
+34 Rigid Body Mechanics
+35 FIBO Talk Series Season 3
+36 FIBO Talk Series Season 2
+37 FIBO Talk Series Season 1
+38 Workshop การออกแบบป้ายชื่อ ด้วย TinkerCAD 17-18 กันยายน 2565
+39 ต่อยอดและเริ่มต้นการออกแบบหุ่นยนต์เคลื่อนที่บนพื้นดิน
+40 2.การออกแบบชิ้นงาน 3 มิติโดยใช้โปรแกรม Onshape
+41 Basic Robot Arm Kinematics
+42 A Survey of Optimizers for Neural networks and Deep Learning
+43 Machine Learning for Robotics
+44 (อยู่ในระหว่างดำเนินการ) ความรู้ทั่วไปทางเทคนิคเกี่ยวกับการพัฒนา โรงงานสู่ Smart Factory
+45 Basic Live Streaming and Video Editing
+46 Statics
+47 Robot arm Kinematics (Basic)
+48 คู่มือการใช้งาน การเรียนรู้ บน ROBOTIC LEARNING HUB

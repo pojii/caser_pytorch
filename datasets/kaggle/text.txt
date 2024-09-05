@@ -1,0 +1,126 @@
+0 Computer Science and Engineering (CSE) - Introduction to Computer Science and Engineering
+1 Computer Science and Engineering (CSE) - Introduction to Computer Science and Engineering
+2 Machine Learning - Machine Learning (v3)
+3 Business Data Analytics - Business Data Analytics
+4 Data Science - Data Science
+5 Statistics - Statistics
+6 Data Science - Data Science
+7 Data Science - Data Science
+8 Business Data Analytics - Business Data Analytics
+9 Computer Organization - Computer Organization
+10 Computer Science and Engineering (CSE) - Computer Science and Engineering
+11 Data Visualization - Data Visualization
+12 Data Science - Data Science
+13 Business Data Analytics - Business Data Analytics
+14 Business Computing - Business Computing
+15 Technology and Applications - Technology and Applications
+16 Machine Learning - Machine Learning
+17 Business Data Analytics - Business Data Analytics
+18 Business Data Analytics - Business Data Analytics
+19 Business Computing - Business Computing
+20 Machine Learning - Machine Learning (v1)
+21 Business Data Analytics - Business Data Analytics
+22 Business Data Analytics - Business Data Analytics
+23 Python Programming - Python Programming
+24 Business Data Analytics - Business Data Analytics
+25 Machine Learning - Machine Learning
+26 Computer Organization - Computer Organization
+27 Machine Learning - Machine Learning (v3)
+28 Database Systems - Database Systems
+29 Computer Organization - Computer Organization
+30 Research Project - Research Project
+31 Software Engineering - Software Engineering
+32 Programming and Algorithms - Programming and Algorithms
+33 Linear Algebra - Linear Algebra (v1)
+34 Machine Learning - Machine Learning
+35 Computer Science and Engineering (CSE) - Computer Science and Engineering
+36 Data Science - Data Science
+37 Data Analytics - Data Analytics
+38 Machine Learning - Machine Learning
+39 Machine Learning - Machine Learning
+40 Machine Learning - Machine Learning
+41 Machine Learning - Machine Learning
+42 Business Data Analytics - Business Data Analytics
+43 Business Computing - Business Computing
+44 Computer Science and Engineering (CSE) - Computer Science and Engineering
+45 Communication Skills - Communication Skills
+46 Database Systems - Database Systems
+47 Computer Networks and Security - Computer Networks and Security
+48 Data Visualization - Data Visualization
+49 Research Project - Research Project
+50 Linear Algebra - Linear Algebra (v1)
+51 Software Engineering - Software Engineering
+52 Research Project - Research Project
+53 Web Development - Web Development
+54 RAVSCTEST1 - RAVSCTEST1
+55 Research Project - Research Project
+56 Computer Organization - Computer Organization
+57 Software Engineering - Software Engineering
+58 Linear Algebra - Linear Algebra
+59 Data Science - Data Science
+60 Computer Science and Engineering (CSE) - Computer Science and Engineering (v1)
+61 Computer Science and Engineering (CSE) - Computer Science and Engineering
+62 Machine Learning - Machine Learning (v2)
+63 Business Data Analytics - Business Data Analytics
+64 Linear Algebra - Linear Algebra (v1)
+65 Machine Learning - Machine Learning
+66 Business Data Analytics - Business Data Analytics
+67 Business Data Analytics - Business Data Analytics
+68 Machine Learning - Machine Learning
+69 Business Data Analytics - Business Data Analytics
+70 Data Analytics - Data Analytics
+71 Research Project - Research Project
+72 Business Data Analytics - Business Data Analytics
+73 Business Data Analytics - Business Data Analytics
+74 Computer Science and Engineering (CSE) - Computer Science and Engineering
+75 Technology and Applications - Technology and Applications
+76 Data Science - Data Science
+77 Business Data Analytics - Business Data Analytics
+78 Linear Algebra - Linear Algebra (v1)
+79 Machine Learning - Machine Learning (v3)
+80 Security and Cryptography - Security and Cryptography
+81 Technology and Applications - Technology and Applications
+82 Business Data Analytics - Business Data Analytics
+83 Programming and Algorithms - Programming and Algorithms
+84 Data Journalism - Data Journalism
+85 Computer Programming - Computer Programming
+86 Computer Science and Engineering (CSE) - Computer Science and Engineering
+87 Electrical Engineering - Electrical Engineering
+88 Computer Science and Engineering (CSE) - Computer Science and Engineering
+89 Artificial Intelligence - Artificial Intelligence
+90 Data Warehousing - Data Warehousing
+91 Human-Computer Interaction - Human-Computer Interaction
+92 Linear Algebra - Linear Algebra (v1)
+93 Software Engineering - Software Engineering
+94 Data Science - Data Science
+95 Human-Computer Interaction - Human-Computer Interaction
+96 Software Engineering - Software Engineering
+97 Technology and Applications - Technology and Applications
+98 Data Engineering - Data Engineering
+99 Information Technology - Information Technology
+100 Operating Systems - Operating Systems
+101 Business Data Analytics - Business Data Analytics
+102 Web Development - Web Development
+103 Data Processing - Data Processing
+104 Technology and Applications - Technology and Applications
+105 Computer Science and Engineering (CSE) - Computer Science and Engineering
+106 General Programming - General Programming
+107 Database Systems - Database Systems
+108 PHP Programming - PHP Programming
+109 Technology and Applications - Technology and Applications
+110 Data Analytics - Data Analytics
+111 Statistics - Statistics
+112 Data Science - Data Science
+113 Computer Science and Engineering (CSE) - Computer Science and Engineering
+114 Data Science - Data Science
+115 Business Analytics - Business Analytics
+116 Programming and Algorithms - Programming and Algorithms
+117 Programming and Algorithms - Programming and Algorithms
+118 Data Analytics - Data Analytics
+119 Statistics - Statistics
+120 Technology and Applications - Technology and Applications
+121 Database Systems - Database Systems
+122 Data Science - Data Science
+123 Data Science - Data Science
+124 Database Systems - Database Systems
+125 General Programming - General Programming
