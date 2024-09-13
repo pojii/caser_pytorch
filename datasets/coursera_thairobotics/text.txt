@@ -1,0 +1,275 @@
+1 Support Vector Machine
+2 Dimensionality Reduction
+3 PRE – TEST RAC 2566
+4 การใช้เครื่องมือเบื้องต้น (Basic Tools)
+5 ทดสอบระบบ
+6 Introduction to Augmented Reality
+7 3D Design with Onshape
+8 Basic Actuator in Robotics
+9 Robotic Automation Systems (PLC)
+10 MQTT for Beginner
+11 Engineering Circuit Analysis
+12 Internet of Things Applications
+13 You Only Look Once (YOLO): Unified, Real-Time Object Detection
+14 แนวทางการเขียนโปรแกรมควบคุมหุ่นยนต์แขนกลโดยคำนึงถึงความปลอดภัย
+15 เทคโนโลยีหุ่นยนต์เบื้องต้น
+16 ความรู้ทั่วไปเกี่ยวกับ Smart Factory สำหรับบุคคลทั่วไป
+17 Introduction to Machine Learning and RapidMiner
+18 A Survey of Optimizers for Neural Networks and Deep Learning
+19 Image Processing
+20 Introduction to 3D Design and Printing
+21 ประเภทของระบบเบื้องต้นในวิทยาการหุ่นยนต์
+22 สัญญาณเบื้องต้นในวิทยาการหุ่นยนต์
+23 Fundamental Mathematics for Robotics (Ordinary Differential Equations)
+24 การสั่งงานระบบสาธิตการบรรจุภัณฑ์จากระยะไกล
+25 Object Localization Using Gradient-Weighted Class Activation Mapping (Grad-CAM)
+26 Introduction to Deep Learning for Sequential Data
+27 Introduction to Neural Networks and How it Learns ?
+28 Introduction to Robotics
+29 Foundation of Robotics
+30 Industrial Sensors and Actuators
+31 Solidworks จากพื้นฐานสู่มืออาชีพ
+32 Software Development
+33 Deep Learning for Image Classification
+34 PLC for Industrial Robots
+35 Rigid Body Mechanics
+36 FIBO Talk Series Season 3
+37 FIBO Talk Series Season 2
+38 FIBO Talk Series Season 1
+39 Workshop การออกแบบป้ายชื่อ ด้วย TinkerCAD 17-18 กันยายน 2565
+40 ต่อยอดและเริ่มต้นการออกแบบหุ่นยนต์เคลื่อนที่บนพื้นดิน
+41 2.การออกแบบชิ้นงาน 3 มิติโดยใช้โปรแกรม Onshape
+42 Basic Robot Arm Kinematics
+43 A Survey of Optimizers for Neural networks and Deep Learning
+44 Machine Learning for Robotics
+45 (อยู่ในระหว่างดำเนินการ) ความรู้ทั่วไปทางเทคนิคเกี่ยวกับการพัฒนา โรงงานสู่ Smart Factory
+46 Basic Live Streaming and Video Editing
+47 Statics
+48 Robot arm Kinematics (Basic)
+49 คู่มือการใช้งาน การเรียนรู้ บน ROBOTIC LEARNING HUB
+50 Exploratory Data Analysis for Machine Learning
+51 Neural Networks and Deep Learning
+52 Introduction to Data Science in Python
+53 Data Visualization with Python
+54 Emotion AI: Facial Key-points Detection
+55 What is Data Science? 
+56 Machine Learning: Regression
+57 Tableau Public for Project Management and Beyond
+58 Facial Keypoint Detection with PyTorch
+59 Detecting COVID-19 with Chest X-Ray using PyTorch
+60 Applied Machine Learning in Python
+61 Basic Statistics
+62 Introduction to Cybersecurity Essentials
+63 Data Visualization
+64 Python for Data Science, AI & Development
+65 Introduction to Machine Learning
+66 Introduction to Artificial Intelligence (AI)
+67  Strategically Build and Engage Your Network on LinkedIn 
+68 Coding Interview Preparation
+69 Tools for Data Science
+70 Technical Support Fundamentals
+71 Data Science Methodology
+72 Distributed Programming in Java
+73 Introduction to Machine Learning in Production
+74 Design Principles: an Introduction
+75 Introduction to Front-End Development
+76 Designing, Running, and Analyzing Experiments
+77 Information Design
+78 Conduct UX Research and Test Early Concepts
+79 Introduction to Back-End Development
+80 React Basics
+81 Programming in Python
+82 Game Design and Development 1: 2D Shooter
+83 Parallel Programming in Java
+84 Introduction to Software Engineering
+85 Concurrent Programming in Java
+86 Finance for Non-Financial Managers
+87 Databases and SQL for Data Science with Python
+88 Introduction to Scrum Master Profession
+89 Human-Centered Design: an Introduction
+90 User Experience: Research & Prototyping
+91 Quantitative Methods
+92 Information Technology (IT) Fundamentals for Everyone
+93 Principles of UX/UI Design
+94 Introduction to Cloud Computing
+95 Input and Interaction
+96 R Programming
+97 Prompt Engineering for ChatGPT
+98 Introduction to Financial Analysis - The 'Why?'
+99 Data Analysis with R Programming
+100 Introduction to High-Throughput Materials Development
+101 Materials Science: 10 Things Every Engineer Should Know
+102 Oil & Gas Industry Operations and Markets 
+103 Create High-Fidelity Designs and Prototypes in Figma
+104 Build Wireframes and Low-Fidelity Prototypes
+105 Foundations of User Experience (UX) Design
+106 Designing User Interfaces and Experiences (UI/UX)
+107 Get Started with Figma
+108 AstroTech: The Science and Technology behind Astronomical Discovery
+109 Create a Mockup in Figma
+110 Introduction to MongoDB
+111 Introduction to C# Programming and Unity
+112 Foundations of Digital Marketing and E-commerce
+113 Go Beyond the Numbers: Translate Data into Insights
+114 Introduction to Computers and Operating Systems and Security
+115 Foundations: Data, Data, Everywhere
+116 JavaScript Interview Challenges
+117 Prepare Data for Exploration
+118 C for Everyone: Structured Programming
+119 Start the UX Design Process: Empathize, Define, and Ideate
+120 Share Data Through the Art of Visualization
+121 Foundations of Cybersecurity
+122 Computer Science: Programming with a Purpose
+123 Groundwork for Success in Sales Development
+124 Get Started with Python
+125 Process Data from Dirty to Clean
+126 Foundations of Data Science
+127 Introduction to the Internet of Things and Embedded Systems
+128 Ask Questions to Make Data-Driven Decisions
+129 Programming Fundamentals
+130 Introduction to Mobile Development
+131 Cybersecurity Roles, Processes & Operating System Security
+132 Build a Server Rendered Website with Next.js
+133 Relational Database Design
+134 Google Data Analytics Capstone: Complete a Case Study
+135 Analyze Data to Answer Questions
+136 Strategic Innovation: Managing Innovation Initiatives
+137 Introduction to Data Analytics
+138 Python Data Analytics
+139 Entrepreneurship
+140 Data Analysis with Spreadsheets and SQL
+141 Innovative Finance: Hacking finance to change the world 
+142 Dynamic Programming, Greedy Algorithms
+143 Mathematics for Machine Learning: Linear Algebra
+144 Introduction to TensorFlow for Artificial Intelligence, Machine Learning, and Deep Learning
+145 Developing a Winning Marketing Strategy
+146 Entrepreneurial Competencies for Landscape Restoration
+147 Emerging Technology, Disruption, and AI
+148 Moral Foundations of Politics 
+149 Connect and Protect: Networks and Network Security
+150 Material Processing
+151 Investment Banking: Financial Analysis and Valuation
+152 Introduction to Large Language Models
+153 Developing Innovative Ideas for New Companies: The First Step in Entrepreneurship
+154 C Programming: Getting Started - 1
+155 IoT Devices
+156 Linear Algebra for Machine Learning and Data Science
+157 Building a Business Presence With Facebook Marketing
+158  Storytelling in Branding and Content Marketing 
+159 Astronomy: Exploring Time and Space
+160 Programming for Everybody (Getting Started with Python)
+161 Mathematics for Machine Learning: Multivariate Calculus
+162 Create a User Journey Map in Miro
+163 Cost and Economics in Pricing Strategy
+164 Stability and Capability in Quality Improvement
+165 Introduction to Personal Finance
+166 Foundations of AR
+167 Make the Sale: Build, Launch, and Manage E-commerce Stores
+168 Essentials of Management and Strategic Planning
+169 English for Common Interactions in the Workplace: Basic Level
+170 Fundamentals of International Business
+171 Ethics, Culture, and Global Perspectives
+172 Introduction to Python
+173 Python and Statistics for Financial Analysis
+174 Positive Psychology 
+175 Developing a Marketing Mix for Growth
+176 Creating a Product-Market Fit with Value Proposition Canvas
+177 Customer Centric Innovation
+178 Introduction to Sustainability
+179 Valuation for Startups Using Discounted Cash Flows Approach
+180 Design Thinking and Global Startup
+181 Convolutional Neural Networks
+182 Technology Strategy: Creative Destruction
+183 Banking and Financial Institutions
+184 Intro to AR/VR/MR/XR: Technologies, Applications & Issues
+185 Mathematics for Machine Learning: PCA
+186 International Business Context
+187 Microsoft Power Platform Fundamentals
+188 Satisfaction Guaranteed: Develop Customer Loyalty Online
+189 The Product Lifecycle: A Guide from start to finish 
+190 What is Technology Entrepreneurship and Innovation?
+191 Getting Started with Technology Startups
+192 Machine Learning for All
+193 Developing the Opportunity for Corporate Entrepreneurs
+194 Branding for Differential Advantage with Jagdish Sheth
+195 Forecasting Financial Statements & Valuation for Accountants
+196 The Data Scientist’s Toolbox
+197 Leading Teams: Developing as a Leader
+198 Text Mining and Analytics
+199 Introduction to EdTech
+200 Startup Valuation Methods
+201 Introduction to Generative AI 
+202 Web Application Development with JavaScript and MongoDB
+203 Operations Management: Quality and Supply Chain
+204 Design a User Experience for Social Good & Prepare for Jobs
+205 Innovation: From Creativity to Entrepreneurship Capstone
+206 Excel for Beginners: Pivot Tables
+207 Crash Course on Python
+208 Numerical Methods for Engineers
+209 Build Dashboards in Power BI
+210 Preparing  Data for Analysis with Microsoft Excel
+211 Machine Learning Foundations: A Case Study Approach
+212 Miracles of Human Language: An Introduction to Linguistics
+213 Operations Research (2): Optimization Algorithms
+214 Designing and Implementing Your Coaching Strategy
+215 International Business I
+216 Using Sensors With Your Raspberry Pi
+217 Sensor Manufacturing and Process Control
+218 Introduction to Systems and Network Mapping with Kumu
+219 Introduction to Agile Development and Scrum
+220 How to Finance and Grow Your Startup – Without VC
+221 Google Docs
+222 Project Valuation and the Capital Budgeting Process
+223 Successful Negotiation: Essential Strategies and Skills
+224 Algorithmic Toolbox
+225 Natural Language Processing with Classification and Vector Spaces
+226 Introduction to Risk Management
+227 Mathematical Thinking in Computer Science
+228 Foundations of Business Intelligence
+229 Overview of Data Visualization
+230 Prediction and Control with Function Approximation
+231 Matrix Algebra for Engineers
+232 Play It Safe: Manage Security Risks
+233 Generative AI for Everyone
+234 OKR Certification: Leadership and Goal Setting
+235 Managing Innovation: Ambidexterity, Teams and Leading Change
+236 Operations Management: Organization and Analysis
+237 Exploring Emerging Technologies for Lifelong Learning and Success
+238 Introduction to HTML5
+239 Introduction to FPGA Design for Embedded Systems
+240 Storing, Retrieving, and Processing JSON data with Python
+241 Introduction to DevOps
+242 Harnessing the Power of Data with Power BI
+243 AWS Cloud Technical Essentials
+244 Google Cloud Big Data and Machine Learning Fundamentals
+245 Data Analysis with Python
+246 Cloud Computing Foundations
+247 AWS S3 Basics
+248 Operating Systems Fundamentals
+249 Introduction to Databases
+250 Improving Deep Neural Networks: Hyperparameter Tuning, Regularization and Optimization
+251 Tools of the Trade: Linux and SQL
+252 Computer Architecture
+253 Introduction to Docker: Build Your Own Portfolio Site
+254 Introduction to Android Mobile Application Development 
+255 Typescript - Learn the fundamentals
+256 Python Project for Data Science
+257 Think Again I: How to Understand Arguments
+258 Songwriting: Writing the Lyrics
+259 Python Basics
+260 Generative AI with Large Language Models
+261 Mastering Data Analysis with Pandas
+262 Algorithms, Part I
+263 Finding Purpose and Meaning In Life: Living for What Matters Most
+264 Algorithms, Part II
+265 Think Outside the Inbox: Email Marketing
+266 Beer Quality: Foam
+267 Introduction to Industrial Bioprocess Development
+268 Hardware Description Languages for FPGA Design
+269  Use Canva to Create Desktop and Mobile-friendly Web Pages.
+270 Introduction to Computer Vision and Image Processing
+271 Computer Science:  Algorithms, Theory, and Machines
+272 Sales and CRM Overview
+273 Introduction to Project Management 
+274 Plastic electronics
+275 Ferrous Technology I

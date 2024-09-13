@@ -26,18 +26,25 @@ class Interactions(object):
             num_item = 0
         else:
             num_user = len(user_map)
-            print('item_map',item_map)
             num_item = len(item_map)
 
         user_ids = list()
         item_ids = list()
         
-        # read users and items from file
         with open(file_path, 'r') as fin:
             for line in fin:
-                u, i, _ = line.strip().split()
-                user_ids.append(u)
-                item_ids.append(i)
+                parts = line.strip().split()
+                if len(parts) == 2:
+                    u, i = parts
+                    user_ids.append(u)
+                    item_ids.append(i)
+                elif len(parts) == 3:
+                    u, i, r = parts
+                    if r == '1':  # เก็บเฉพาะกรณีที่มีการดู
+                        user_ids.append(u)
+                        item_ids.append(i)
+                else:
+                    print(f"Skipping line with unexpected format: {line.strip()}")
 
         # update user and item mapping
         for u in user_ids:
@@ -77,19 +84,7 @@ class Interactions(object):
         return sp.csr_matrix((data, (row, col)),
                              shape=(self.num_users, self.num_items))
 
-    def to_sequence(self, sequence_length=5, target_length=1):
-        """
-        Transform to sequence form.
-
-        Parameters
-        ----------
-
-        sequence_length: int
-            Sequence length. Subsequences shorter than this
-            will be left-padded with zeros.
-        target_length: int
-            Sequence target length.
-        """
+    def to_sequence(self, sequence_length=5, target_length=10):
         max_sequence_length = sequence_length + target_length
 
         # Sort first by user id
@@ -99,47 +94,60 @@ class Interactions(object):
         item_ids = self.item_ids[sort_indices]
 
         user_ids, indices, counts = np.unique(user_ids,
-                                              return_index=True,
-                                              return_counts=True)
+                                            return_index=True,
+                                            return_counts=True)
 
-        num_subsequences = sum([c - max_sequence_length + 1 if c >= max_sequence_length else 1 for c in counts])
+        num_subsequences = sum([max(1, c - sequence_length) for c in counts])
 
-        sequences = np.zeros((num_subsequences, sequence_length),
-                             dtype=np.int64)
-        sequences_targets = np.zeros((num_subsequences, target_length),
-                                     dtype=np.int64)
-        sequence_users = np.empty(num_subsequences,
-                                  dtype=np.int64)
+        sequences = np.zeros((num_subsequences, sequence_length), dtype=np.int64)
+        sequences_targets = np.zeros((num_subsequences, target_length), dtype=np.int64)
+        sequence_users = np.empty(num_subsequences, dtype=np.int64)
 
-        test_sequences = np.zeros((self.num_users, sequence_length),
-                                  dtype=np.int64)
-        test_users = np.empty(self.num_users,
-                              dtype=np.int64)
+        test_sequences = np.zeros((self.num_users, sequence_length), dtype=np.int64)
+        test_users = np.empty(self.num_users, dtype=np.int64)
 
-        _uid = None
-        for i, (uid,
-                item_seq) in enumerate(_generate_sequences(user_ids,
-                                                           item_ids,
-                                                           indices,
-                                                           max_sequence_length)):
-            if uid != _uid:
-                test_sequences[uid][:] = item_seq[-sequence_length:]
-                test_users[uid] = uid
-                _uid = uid
-            sequences_targets[i][:] = item_seq[-target_length:]
-            sequences[i][:] = item_seq[:sequence_length]
-            sequence_users[i] = uid
+        idx = 0
+        for user, user_item_ids in zip(user_ids, np.split(item_ids, indices[1:])):
+            # if len(user_item_ids) > sequence_length:
+            for i in range(max(1, len(user_item_ids) - sequence_length)):
+                seq = user_item_ids[i:i + sequence_length]
+                tgt = user_item_ids[i + sequence_length:i + max_sequence_length]
 
-        # Filter out sequences that are all zeros or targets that are all zeros
-        valid_indices = np.where((sequences != 0).any(axis=1) & (sequences_targets != 0).any(axis=1))[0]
-        sequences = sequences[valid_indices]
-        sequences_targets = sequences_targets[valid_indices]
-        sequence_users = sequence_users[valid_indices]
+                # Ensure we add the right padding for target sequences
+                if len(tgt) > 0:
+                    # Left-pad sequences with 0
+                    sequences[idx, -len(seq):] = seq
+                    # Right-pad targets with 0
+                    sequences_targets[idx, :len(tgt)] = tgt
+                    sequence_users[idx] = user
+                    idx += 1
+
+            # Test sequences (last sequence for the user)
+            test_sequences[user, -len(user_item_ids[-sequence_length:]):] = user_item_ids[-sequence_length:]
+            test_users[user] = user
+
+        # Cut down excess sequences
+        sequences = sequences[:idx]
+        sequences_targets = sequences_targets[:idx]
+        sequence_users = sequence_users[:idx]
+
+        print(f"Total sequences: {len(sequences)}")
+
+        # Save to files
+        np.savetxt('sequences.txt', sequences, fmt='%d', delimiter=',')
+        np.savetxt('sequences_targets.txt', sequences_targets, fmt='%d', delimiter=',')
+        np.savetxt('sequence_users.txt', sequence_users, fmt='%d')
+        np.savetxt('test_sequences.txt', test_sequences, fmt='%d', delimiter=',')
 
         self.sequences = SequenceInteractions(sequence_users, sequences, sequences_targets)
         self.test_sequences = SequenceInteractions(test_users, test_sequences)
 
-        print(f"Total sequences after filtering: {len(sequences)}")
+        # Debug: Print sample sequences
+        print("Sample of saved sequences:")
+        print(sequences[:5])
+        print("Sample of saved sequences_targets:")
+        print(sequences_targets[:5])
+
 
 class SequenceInteractions(object):
     """

@@ -1,0 +1,16 @@
+HarvardX/PH278x/2013_Spring	1
+MITx/14.73x/2013_Spring	2
+HarvardX/CS50x/2012	3
+HarvardX/ER22x/2013_Spring	4
+HarvardX/CB22x/2013_Spring	5
+MITx/6.00x/2012_Fall	6
+MITx/6.00x/2013_Spring	7
+MITx/6.002x/2013_Spring	8
+MITx/8.02x/2013_Spring	9
+MITx/7.00x/2013_Spring	10
+HarvardX/PH207x/2012_Fall	11
+MITx/3.091x/2012_Fall	12
+MITx/2.01x/2013_Spring	13
+MITx/6.002x/2012_Fall	14
+MITx/3.091x/2013_Spring	15
+MITx/8.MReV/2013_Summer	16

@@ -1,18 +1,18 @@
-0 Human Health and Global Environmental
-1 The Challenges of Global Poverty
-2 Introduction to Computer Science
-3 JusticeX
-4 The Ancient Greek Hero
-5 Introduction to Computer
-Science and Programming Fall
+1 Human Health and Global Environmental
+2 The Challenges of Global Poverty
+3 Introduction to Computer Science
+4 JusticeX
+5 The Ancient Greek Hero
 6 Introduction to Computer
+Science and Programming Fall
+7 Introduction to Computer
 Science and Programming Spring
-7 Circuits and Electronics Spring
-8 Electricity and Magnetism
-9 Introduction to Biology
-10 Health in Numbers: Quantitative Methods in Clinical & Public Health Research
-11 Introduction to Solid State Chemistry Fall
-12 Elements of Structures
-13 Circuits and Electronics Fall
-14 Introduction to Solid State Chemistry Spring
-15 Mechanics Review
+8 Circuits and Electronics Spring
+9 Electricity and Magnetism
+10 Introduction to Biology
+11 Health in Numbers: Quantitative Methods in Clinical & Public Health Research
+12 Introduction to Solid State Chemistry Fall
+13 Elements of Structures
+14 Circuits and Electronics Fall
+15 Introduction to Solid State Chemistry Spring
+16 Mechanics Review

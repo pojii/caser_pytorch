@@ -8,3 +8,4 @@ datasets/thairobotics/combined_output.csv
 datasets/coursera/usage-report.csv
 datasets/coursera/filtered_usage_course.csv
 datasets/coursera/merged_usage_course.csv
+*.pth

@@ -1,126 +1,126 @@
-0 Computer Science and Engineering (CSE) - Introduction to Computer Science and Engineering
 1 Computer Science and Engineering (CSE) - Introduction to Computer Science and Engineering
-2 Machine Learning - Machine Learning (v3)
-3 Business Data Analytics - Business Data Analytics
-4 Data Science - Data Science
-5 Statistics - Statistics
-6 Data Science - Data Science
+2 Computer Science and Engineering (CSE) - Introduction to Computer Science and Engineering
+3 Machine Learning - Machine Learning (v3)
+4 Business Data Analytics - Business Data Analytics
+5 Data Science - Data Science
+6 Statistics - Statistics
 7 Data Science - Data Science
-8 Business Data Analytics - Business Data Analytics
-9 Computer Organization - Computer Organization
-10 Computer Science and Engineering (CSE) - Computer Science and Engineering
-11 Data Visualization - Data Visualization
-12 Data Science - Data Science
-13 Business Data Analytics - Business Data Analytics
-14 Business Computing - Business Computing
-15 Technology and Applications - Technology and Applications
-16 Machine Learning - Machine Learning
-17 Business Data Analytics - Business Data Analytics
+8 Data Science - Data Science
+9 Business Data Analytics - Business Data Analytics
+10 Computer Organization - Computer Organization
+11 Computer Science and Engineering (CSE) - Computer Science and Engineering
+12 Data Visualization - Data Visualization
+13 Data Science - Data Science
+14 Business Data Analytics - Business Data Analytics
+15 Business Computing - Business Computing
+16 Technology and Applications - Technology and Applications
+17 Machine Learning - Machine Learning
 18 Business Data Analytics - Business Data Analytics
-19 Business Computing - Business Computing
-20 Machine Learning - Machine Learning (v1)
-21 Business Data Analytics - Business Data Analytics
+19 Business Data Analytics - Business Data Analytics
+20 Business Computing - Business Computing
+21 Machine Learning - Machine Learning (v1)
 22 Business Data Analytics - Business Data Analytics
-23 Python Programming - Python Programming
-24 Business Data Analytics - Business Data Analytics
-25 Machine Learning - Machine Learning
-26 Computer Organization - Computer Organization
-27 Machine Learning - Machine Learning (v3)
-28 Database Systems - Database Systems
-29 Computer Organization - Computer Organization
-30 Research Project - Research Project
-31 Software Engineering - Software Engineering
-32 Programming and Algorithms - Programming and Algorithms
-33 Linear Algebra - Linear Algebra (v1)
-34 Machine Learning - Machine Learning
-35 Computer Science and Engineering (CSE) - Computer Science and Engineering
-36 Data Science - Data Science
-37 Data Analytics - Data Analytics
-38 Machine Learning - Machine Learning
+23 Business Data Analytics - Business Data Analytics
+24 Python Programming - Python Programming
+25 Business Data Analytics - Business Data Analytics
+26 Machine Learning - Machine Learning
+27 Computer Organization - Computer Organization
+28 Machine Learning - Machine Learning (v3)
+29 Database Systems - Database Systems
+30 Computer Organization - Computer Organization
+31 Research Project - Research Project
+32 Software Engineering - Software Engineering
+33 Programming and Algorithms - Programming and Algorithms
+34 Linear Algebra - Linear Algebra (v1)
+35 Machine Learning - Machine Learning
+36 Computer Science and Engineering (CSE) - Computer Science and Engineering
+37 Data Science - Data Science
+38 Data Analytics - Data Analytics
 39 Machine Learning - Machine Learning
 40 Machine Learning - Machine Learning
 41 Machine Learning - Machine Learning
-42 Business Data Analytics - Business Data Analytics
-43 Business Computing - Business Computing
-44 Computer Science and Engineering (CSE) - Computer Science and Engineering
-45 Communication Skills - Communication Skills
-46 Database Systems - Database Systems
-47 Computer Networks and Security - Computer Networks and Security
-48 Data Visualization - Data Visualization
-49 Research Project - Research Project
-50 Linear Algebra - Linear Algebra (v1)
-51 Software Engineering - Software Engineering
-52 Research Project - Research Project
-53 Web Development - Web Development
-54 RAVSCTEST1 - RAVSCTEST1
-55 Research Project - Research Project
-56 Computer Organization - Computer Organization
-57 Software Engineering - Software Engineering
-58 Linear Algebra - Linear Algebra
-59 Data Science - Data Science
-60 Computer Science and Engineering (CSE) - Computer Science and Engineering (v1)
-61 Computer Science and Engineering (CSE) - Computer Science and Engineering
-62 Machine Learning - Machine Learning (v2)
-63 Business Data Analytics - Business Data Analytics
-64 Linear Algebra - Linear Algebra (v1)
-65 Machine Learning - Machine Learning
-66 Business Data Analytics - Business Data Analytics
+42 Machine Learning - Machine Learning
+43 Business Data Analytics - Business Data Analytics
+44 Business Computing - Business Computing
+45 Computer Science and Engineering (CSE) - Computer Science and Engineering
+46 Communication Skills - Communication Skills
+47 Database Systems - Database Systems
+48 Computer Networks and Security - Computer Networks and Security
+49 Data Visualization - Data Visualization
+50 Research Project - Research Project
+51 Linear Algebra - Linear Algebra (v1)
+52 Software Engineering - Software Engineering
+53 Research Project - Research Project
+54 Web Development - Web Development
+55 RAVSCTEST1 - RAVSCTEST1
+56 Research Project - Research Project
+57 Computer Organization - Computer Organization
+58 Software Engineering - Software Engineering
+59 Linear Algebra - Linear Algebra
+60 Data Science - Data Science
+61 Computer Science and Engineering (CSE) - Computer Science and Engineering (v1)
+62 Computer Science and Engineering (CSE) - Computer Science and Engineering
+63 Machine Learning - Machine Learning (v2)
+64 Business Data Analytics - Business Data Analytics
+65 Linear Algebra - Linear Algebra (v1)
+66 Machine Learning - Machine Learning
 67 Business Data Analytics - Business Data Analytics
-68 Machine Learning - Machine Learning
-69 Business Data Analytics - Business Data Analytics
-70 Data Analytics - Data Analytics
-71 Research Project - Research Project
-72 Business Data Analytics - Business Data Analytics
+68 Business Data Analytics - Business Data Analytics
+69 Machine Learning - Machine Learning
+70 Business Data Analytics - Business Data Analytics
+71 Data Analytics - Data Analytics
+72 Research Project - Research Project
 73 Business Data Analytics - Business Data Analytics
-74 Computer Science and Engineering (CSE) - Computer Science and Engineering
-75 Technology and Applications - Technology and Applications
-76 Data Science - Data Science
-77 Business Data Analytics - Business Data Analytics
-78 Linear Algebra - Linear Algebra (v1)
-79 Machine Learning - Machine Learning (v3)
-80 Security and Cryptography - Security and Cryptography
-81 Technology and Applications - Technology and Applications
-82 Business Data Analytics - Business Data Analytics
-83 Programming and Algorithms - Programming and Algorithms
-84 Data Journalism - Data Journalism
-85 Computer Programming - Computer Programming
-86 Computer Science and Engineering (CSE) - Computer Science and Engineering
-87 Electrical Engineering - Electrical Engineering
-88 Computer Science and Engineering (CSE) - Computer Science and Engineering
-89 Artificial Intelligence - Artificial Intelligence
-90 Data Warehousing - Data Warehousing
-91 Human-Computer Interaction - Human-Computer Interaction
-92 Linear Algebra - Linear Algebra (v1)
-93 Software Engineering - Software Engineering
-94 Data Science - Data Science
-95 Human-Computer Interaction - Human-Computer Interaction
-96 Software Engineering - Software Engineering
-97 Technology and Applications - Technology and Applications
-98 Data Engineering - Data Engineering
-99 Information Technology - Information Technology
-100 Operating Systems - Operating Systems
-101 Business Data Analytics - Business Data Analytics
-102 Web Development - Web Development
-103 Data Processing - Data Processing
-104 Technology and Applications - Technology and Applications
-105 Computer Science and Engineering (CSE) - Computer Science and Engineering
-106 General Programming - General Programming
-107 Database Systems - Database Systems
-108 PHP Programming - PHP Programming
-109 Technology and Applications - Technology and Applications
-110 Data Analytics - Data Analytics
-111 Statistics - Statistics
-112 Data Science - Data Science
-113 Computer Science and Engineering (CSE) - Computer Science and Engineering
-114 Data Science - Data Science
-115 Business Analytics - Business Analytics
-116 Programming and Algorithms - Programming and Algorithms
+74 Business Data Analytics - Business Data Analytics
+75 Computer Science and Engineering (CSE) - Computer Science and Engineering
+76 Technology and Applications - Technology and Applications
+77 Data Science - Data Science
+78 Business Data Analytics - Business Data Analytics
+79 Linear Algebra - Linear Algebra (v1)
+80 Machine Learning - Machine Learning (v3)
+81 Security and Cryptography - Security and Cryptography
+82 Technology and Applications - Technology and Applications
+83 Business Data Analytics - Business Data Analytics
+84 Programming and Algorithms - Programming and Algorithms
+85 Data Journalism - Data Journalism
+86 Computer Programming - Computer Programming
+87 Computer Science and Engineering (CSE) - Computer Science and Engineering
+88 Electrical Engineering - Electrical Engineering
+89 Computer Science and Engineering (CSE) - Computer Science and Engineering
+90 Artificial Intelligence - Artificial Intelligence
+91 Data Warehousing - Data Warehousing
+92 Human-Computer Interaction - Human-Computer Interaction
+93 Linear Algebra - Linear Algebra (v1)
+94 Software Engineering - Software Engineering
+95 Data Science - Data Science
+96 Human-Computer Interaction - Human-Computer Interaction
+97 Software Engineering - Software Engineering
+98 Technology and Applications - Technology and Applications
+99 Data Engineering - Data Engineering
+100 Information Technology - Information Technology
+101 Operating Systems - Operating Systems
+102 Business Data Analytics - Business Data Analytics
+103 Web Development - Web Development
+104 Data Processing - Data Processing
+105 Technology and Applications - Technology and Applications
+106 Computer Science and Engineering (CSE) - Computer Science and Engineering
+107 General Programming - General Programming
+108 Database Systems - Database Systems
+109 PHP Programming - PHP Programming
+110 Technology and Applications - Technology and Applications
+111 Data Analytics - Data Analytics
+112 Statistics - Statistics
+113 Data Science - Data Science
+114 Computer Science and Engineering (CSE) - Computer Science and Engineering
+115 Data Science - Data Science
+116 Business Analytics - Business Analytics
 117 Programming and Algorithms - Programming and Algorithms
-118 Data Analytics - Data Analytics
-119 Statistics - Statistics
-120 Technology and Applications - Technology and Applications
-121 Database Systems - Database Systems
-122 Data Science - Data Science
+118 Programming and Algorithms - Programming and Algorithms
+119 Data Analytics - Data Analytics
+120 Statistics - Statistics
+121 Technology and Applications - Technology and Applications
+122 Database Systems - Database Systems
 123 Data Science - Data Science
-124 Database Systems - Database Systems
-125 General Programming - General Programming
+124 Data Science - Data Science
+125 Database Systems - Database Systems
+126 General Programming - General Programming
