@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Recommendation System</title>
+    <style>
+        .course-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+            cursor: pointer;
+            width: 200px;
+            text-align: center;
+        }
+        .course-card.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Course Recommendation System</h1>
+    <div id="courseContainer"></div>
+    <h2>Selected Courses:</h2>
+    <ul id="selectedCourses"></ul>
+    <button onclick="getRecommendation()">Get Recommendation</button>
+    <h2>Recommended Courses:</h2>
+    <ul id="recommendationList"></ul>
+
+    <script>
+        let selectedCourses = [];
+
+        // Fetch course list from text.txt file
+        fetch('text')
+            .then(response => response.text())
+            .then(data => {
+                const courses = data.trim().split('\n');
+                const courseContainer = document.getElementById('courseContainer');
+                courses.forEach(course => {
+                    const id = course.split(' ')[0]; // แยกเอา ID ที่อยู่ตำแหน่งแรก
+                    const name = course.split(' ').slice(1).join(' '); // นำส่วนที่เหลือมารวมเป็นชื่อคอร์ส
+                    const card = document.createElement('div');
+                    card.classList.add('course-card');
+                    card.textContent = name;
+                    card.setAttribute('data-id', id);
+                    card.addEventListener('click', function() {
+                        toggleSelectCourse(id, name, card);
+                    });
+                    courseContainer.appendChild(card);
+                });
+            });
+
+        function toggleSelectCourse(id, name, cardElement) {
+            if (selectedCourses.includes(id)) {
+                // Unselect the course
+                selectedCourses = selectedCourses.filter(courseId => courseId !== id);
+                cardElement.classList.remove('selected');
+            } else {
+                // Select the course if under 5 selections
+                if (selectedCourses.length < 5) {
+                    selectedCourses.push(id);
+                    cardElement.classList.add('selected');
+                }
+            }
+            updateSelectedList();
+            disableExtraCards();
+        }
+
+        function updateSelectedList() {
+            const list = document.getElementById('selectedCourses');
+            list.innerHTML = '';
+            selectedCourses.forEach(courseId => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Course ID: ${courseId}`;
+                list.appendChild(listItem);
+            });
+        }
+
+        function disableExtraCards() {
+            const allCards = document.querySelectorAll('.course-card');
+            if (selectedCourses.length >= 5) {
+                allCards.forEach(card => {
+                    if (!card.classList.contains('selected')) {
+                        card.classList.add('disabled');
+                    }
+                });
+            } else {
+                allCards.forEach(card => {
+                    card.classList.remove('disabled');
+                });
+            }
+        }
+
+        function getRecommendation() {
+            // Pad with zeros if less than 5 selected courses
+            const paddedSelection = [...selectedCourses];
+            while (paddedSelection.length < 5) {
+                paddedSelection.push("0"); // Pad with zero
+            }
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ input: paddedSelection.map(Number) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('recommendationList');
+                list.innerHTML = ''; // Clear existing entries
+                data.prediction.forEach(function(item) {
+                    const entry = document.createElement('li');
+                    entry.appendChild(document.createTextNode(item));
+                    list.appendChild(entry);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

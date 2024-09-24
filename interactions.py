@@ -142,12 +142,6 @@ class Interactions(object):
         self.sequences = SequenceInteractions(sequence_users, sequences, sequences_targets)
         self.test_sequences = SequenceInteractions(test_users, test_sequences)
 
-        # Debug: Print sample sequences
-        print("Sample of saved sequences:")
-        print(sequences[:5])
-        print("Sample of saved sequences_targets:")
-        print(sequences_targets[:5])
-
 
 class SequenceInteractions(object):
     """

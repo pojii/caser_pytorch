@@ -9,9 +9,12 @@ from interactions import Interactions
 from evaluation_without_user import evaluate_ranking
 from utils import set_seed, shuffle, str2bool
 from caser_without_user_emb import Caser
+import matplotlib.pyplot as plt
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
 
 class Recommender:
-    def __init__(self, n_iter, batch_size, learning_rate, l2, neg_samples, model_args, use_cuda, precomputed_embeddings, patience=20):
+    def __init__(self, n_iter, batch_size, learning_rate, l2, neg_samples, model_args, use_cuda, precomputed_embeddings, patience=50):
         self._num_items = None
         self._num_users = None
         self._net = None
@@ -32,6 +35,10 @@ class Recommender:
                 self._device = torch.device('cpu')
         self._initialized = False
         self.patience = patience
+        self.train_losses = []  # To store training losses
+        self.val_losses = []    # To store validation losses
+        self.scheduler = None  # สร้างที่นี่และกำหนดค่าทีหลังใน _initialize()
+        self.learning_rates = []  # To store learning rates
 
     def _initialize(self, interactions):
         """
@@ -46,6 +53,10 @@ class Recommender:
 
         # Initialize the optimizer
         self._optimizer = optim.Adam(self._net.parameters(), weight_decay=self._l2, lr=self._learning_rate)
+        
+        # **Initialize ReduceLROnPlateau scheduler**
+        self.scheduler = ReduceLROnPlateau(self._optimizer, mode='min', factor=0.5, patience=1, verbose=True)
+
         self._initialized = True
 
     def fit(self, train, val, verbose=False):
@@ -80,9 +91,16 @@ class Recommender:
             targets_prediction = items_prediction[:, :targets.size(1)]
             negatives_prediction = items_prediction[:, targets.size(1):]
 
-            positive_loss = -torch.mean(torch.log(torch.sigmoid(targets_prediction) + 1e-8))
-            negative_loss = -torch.mean(torch.log(1 - torch.sigmoid(negatives_prediction) + 1e-8))
-            loss = positive_loss + negative_loss
+            # positive_loss = -torch.mean(torch.log(torch.sigmoid(targets_prediction) + 1e-8))
+            # negative_loss = -torch.mean(torch.log(1 - torch.sigmoid(negatives_prediction) + 1e-8))
+            # loss = positive_loss + negative_loss
+            
+            # **BPR Loss calculation**
+            # Compute the difference between targets (positive samples) and negatives (negative samples)
+            loss_diff = targets_prediction - negatives_prediction
+
+            # Apply the BPR Loss using log-sigmoid
+            loss = -torch.mean(torch.log(torch.sigmoid(loss_diff) + 1e-8))
 
             loss.backward()
             self._optimizer.step()
@@ -91,10 +109,22 @@ class Recommender:
             end_time = time()
             print(f"Epoch {epoch_num + 1}\tloss={loss.item():.4f} [{end_time - start_time:.2f}s]")
 
+            # Save the training loss
+            self.train_losses.append(loss.item())
+
             # Validate the model using validation data (val.txt)
             val_loss = self._evaluate_loss(val)
             print(f"Validation loss: {val_loss:.4f}")
 
+            # Save the validation loss
+            self.val_losses.append(val_loss)
+            self.scheduler.step(val_loss)
+            
+            # เก็บค่า learning rate และปริ้นออกมา
+            current_lr = self.scheduler.optimizer.param_groups[0]['lr']
+            self.learning_rates.append(current_lr)
+            print(f"Current learning rate: {current_lr}")
+            
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
                 patience_counter = 0
@@ -182,31 +212,61 @@ class Recommender:
         torch.save(self._net.state_dict(), path)
         print(f"Model saved to {path}")
         
-    def _evaluate_loss(self, val):
+    # def _evaluate_loss(self, val): # แก้ไขเพื่อใช้ binary cross-entropy loss
+    #     self._net.eval()
+    #     sequences_np = val.sequences.sequences
+    #     targets_np = val.sequences.targets
+
+    #     negatives_np = self._generate_negative_samples(val, n=self._neg_samples)
+
+    #     sequences = torch.from_numpy(sequences_np).long().to(self._device)
+    #     targets = torch.from_numpy(targets_np).long().to(self._device)
+    #     negatives = torch.from_numpy(negatives_np).long().to(self._device)
+
+    #     with torch.no_grad():
+    #         items_to_predict = torch.cat((targets, negatives), 1)
+    #         items_prediction = self._net(sequences, items_to_predict)
+
+    #         targets_prediction = items_prediction[:, :targets.size(1)]
+    #         negatives_prediction = items_prediction[:, targets.size(1):]
+
+    #         positive_loss = -torch.mean(torch.log(torch.sigmoid(targets_prediction) + 1e-8))
+    #         negative_loss = -torch.mean(torch.log(1 - torch.sigmoid(negatives_prediction) + 1e-8))
+    #         val_loss = positive_loss + negative_loss
+
+    #     return val_loss.item()
+    
+    def _evaluate_loss(self, val): # แก้ไขเพื่อใช้ BPR Loss
         self._net.eval()
         sequences_np = val.sequences.sequences
         targets_np = val.sequences.targets
 
+        # สร้าง negative samples
         negatives_np = self._generate_negative_samples(val, n=self._neg_samples)
 
+        # แปลงเป็น torch tensor และย้ายไปยังอุปกรณ์ที่กำหนด (เช่น CPU หรือ GPU)
         sequences = torch.from_numpy(sequences_np).long().to(self._device)
         targets = torch.from_numpy(targets_np).long().to(self._device)
         negatives = torch.from_numpy(negatives_np).long().to(self._device)
-        print(val.sequences.sequences[:5])
-        print(val.sequences.targets[:5])
 
         with torch.no_grad():
+            # รวม target และ negative samples เพื่อสร้าง items ที่ต้องการทำนาย
             items_to_predict = torch.cat((targets, negatives), 1)
             items_prediction = self._net(sequences, items_to_predict)
 
+            # แยกการทำนาย target และ negative samples
             targets_prediction = items_prediction[:, :targets.size(1)]
             negatives_prediction = items_prediction[:, targets.size(1):]
 
-            positive_loss = -torch.mean(torch.log(torch.sigmoid(targets_prediction) + 1e-8))
-            negative_loss = -torch.mean(torch.log(1 - torch.sigmoid(negatives_prediction) + 1e-8))
-            val_loss = positive_loss + negative_loss
+            # **ใช้ BPR Loss**
+            # คำนวณความแตกต่างระหว่างการทำนาย target และ negative
+            loss_diff = targets_prediction - negatives_prediction
 
-        return val_loss.item()
+            # คำนวณ BPR loss โดยใช้ log-sigmoid
+            bpr_loss = -torch.mean(torch.log(torch.sigmoid(loss_diff) + 1e-8))
+
+        return bpr_loss.item()
+
 
 def train_model(model, train_data, test_data, config, pretrained_model_path=None, save_model_path=None, is_pretrain=True):
     """
@@ -220,6 +280,10 @@ def train_model(model, train_data, test_data, config, pretrained_model_path=None
     if not is_pretrain and pretrained_model_path:
         model.load_pretrained_model(pretrained_model_path)
 
+    # Get max index of items in training data sequences
+    max_item_index = np.max(train_data.sequences.sequences)
+    print(f"Max item index in training data: {max_item_index}")
+    
     model.fit(train_data, test_data, verbose=True)
 
     if save_model_path is None:
@@ -232,6 +296,88 @@ def train_model(model, train_data, test_data, config, pretrained_model_path=None
     print(f"Precision: @1={precision[0].mean():.4f}, @5={precision[1].mean():.4f}, @10={precision[2].mean():.4f}")
     print(f"Recall: @1={recall[0].mean():.4f}, @5={recall[1].mean():.4f}, @10={recall[2].mean():.4f}")
     print(f"MAP={mean_aps:.4f}, MRR={mrr:.4f}, NDCG={ndcg:.4f}")
+    
+def plot_losses(edx_model, kaggle_model, thairobotics_model):
+    # หาความยาวที่น้อยที่สุดระหว่างทั้งสามโมเดล
+    min_epochs = min(len(edx_model.train_losses), len(kaggle_model.train_losses), len(thairobotics_model.train_losses))
+
+    # สร้างช่วง epochs ตามความยาวที่น้อยที่สุด
+    epochs = range(1, min_epochs + 1)
+
+    # Plot edX losses (ตัดข้อมูลให้มีความยาวตรงกับ min_epochs)
+    plt.figure(figsize=(10, 6))
+    plt.plot(epochs, edx_model.train_losses[:min_epochs], 'b-', label='edX Train Loss')
+    plt.plot(epochs, edx_model.val_losses[:min_epochs], 'r-', label='edX Validation Loss')
+
+    # Plot Kaggle losses
+    plt.plot(epochs, kaggle_model.train_losses[:min_epochs], 'g-', label='Kaggle Train Loss')
+    plt.plot(epochs, kaggle_model.val_losses[:min_epochs], 'y-', label='Kaggle Validation Loss')
+
+    # Plot ThaiRobotics losses
+    plt.plot(epochs, thairobotics_model.train_losses[:min_epochs], 'c-', label='ThaiRobotics Train Loss')
+    plt.plot(epochs, thairobotics_model.val_losses[:min_epochs], 'm-', label='ThaiRobotics Validation Loss')
+
+    plt.title('Training and Validation Losses for edX, Kaggle, and ThaiRobotics')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.grid(True)
+
+    # บันทึกรูปเป็นไฟล์ PNG
+    plt.savefig('losses_plot.png')
+
+    # ปิดรูปภาพที่ plot เสร็จแล้วเพื่อเคลียร์หน่วยความจำ
+    plt.close()
+
+def plot_losses_and_lr(edx_model, kaggle_model, thairobotics_model):
+    # หาความยาวที่น้อยที่สุดระหว่างทั้งสามโมเดล
+    min_epochs = min(len(edx_model.train_losses), len(kaggle_model.train_losses), len(thairobotics_model.train_losses))
+
+    # สร้างช่วง epochs ตามความยาวที่น้อยที่สุด
+    epochs = range(1, min_epochs + 1)
+
+    # Plot edX losses and learning rate
+    plt.figure(figsize=(10, 6))
+    plt.plot(epochs, edx_model.train_losses[:min_epochs], 'b-', label='edX Train Loss')
+    plt.plot(epochs, edx_model.val_losses[:min_epochs], 'r-', label='edX Validation Loss')
+    plt.plot(epochs, edx_model.learning_rates[:min_epochs], 'k--', label='edX Learning Rate')
+    plt.title('Training and Validation Losses and Learning Rate for edX')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss / Learning Rate')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('edx_losses_and_lr_plot.png')
+    plt.close()
+
+    # Plot Kaggle losses and learning rate
+    plt.figure(figsize=(10, 6))
+    plt.plot(epochs, kaggle_model.train_losses[:min_epochs], 'g-', label='Kaggle Train Loss')
+    plt.plot(epochs, kaggle_model.val_losses[:min_epochs], 'y-', label='Kaggle Validation Loss')
+    plt.plot(epochs, kaggle_model.learning_rates[:min_epochs], 'k--', label='Kaggle Learning Rate')
+    plt.title('Training and Validation Losses and Learning Rate for Kaggle')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss / Learning Rate')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('kaggle_losses_and_lr_plot.png')
+    plt.close()
+
+    # Plot ThaiRobotics losses and learning rate
+    plt.figure(figsize=(10, 6))
+    plt.plot(epochs, thairobotics_model.train_losses[:min_epochs], 'c-', label='ThaiRobotics Train Loss')
+    plt.plot(epochs, thairobotics_model.val_losses[:min_epochs], 'm-', label='ThaiRobotics Validation Loss')
+    plt.plot(epochs, thairobotics_model.learning_rates[:min_epochs], 'k--', label='ThaiRobotics Learning Rate')
+    plt.title('Training and Validation Losses and Learning Rate for ThaiRobotics')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss / Learning Rate')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('thairobotics_losses_and_lr_plot.png')
+    plt.close()
+
+
+# เรียกใช้ function เพื่อสร้างรูปแต่ละรูป
+# plot_losses_separately(edx_model, kaggle_model, thairobotics_model)
 
 if __name__ == '__main__':
     # Set up argument parser
@@ -249,7 +395,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=512)
     parser.add_argument('--learning_rate', type=float, default=1e-3)
     parser.add_argument('--l2', type=float, default=1e-6)
-    parser.add_argument('--neg_samples', type=int, default=3)
+    parser.add_argument('--neg_samples', type=int, default=10)
     parser.add_argument('--use_cuda', type=str2bool, default=True)
 
     config = parser.parse_args()
@@ -275,7 +421,6 @@ if __name__ == '__main__':
     # Load validation data for edX
     edx_val = Interactions('datasets/edx/val.txt')
     edx_val.to_sequence(config.L, config.T)
-    print('edx_val.sequences.sequences:', edx_val.sequences.sequences[:5])
     # Precomputed embeddings for edX
     edx_precomputed_embeddings = np.load("datasets/edx/precomputed_embeddings.npy")
 
@@ -338,3 +483,7 @@ if __name__ == '__main__':
     train_model(thairobotics_model, thairobotics_train, thairobotics_val, config, pretrained_model_path='kaggle_finetuned_model.pth', is_pretrain=False, save_model_path='thairobotics_finetuned_model.pth')
 
     print("Pretraining and fine-tuning completed successfully.")
+    # Call plot_losses after training is completed for all datasets
+    plot_losses(edx_model, kaggle_model, thairobotics_model)
+    # เรียกใช้ฟังก์ชันเพื่อ plot ทั้งค่า Loss และ Learning Rate
+    plot_losses_and_lr(edx_model, kaggle_model, thairobotics_model)
