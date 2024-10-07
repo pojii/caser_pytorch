@@ -124,3 +124,36 @@ class Caser(nn.Module):
 
     def get_item_count(self):
         return self.num_items
+    
+    def predict(self, sequence):
+        item_embs = self.precomputed_embeddings[sequence]
+        
+        # Add batch and channel dimensions if they're missing
+        if len(item_embs.shape) == 2:
+            item_embs = item_embs.unsqueeze(0).unsqueeze(0)  # [1, 1, seq_len, emb_dim]
+        elif len(item_embs.shape) == 3:
+            item_embs = item_embs.unsqueeze(1)  # [batch_size, 1, seq_len, emb_dim]
+
+        out_v = self.conv_v(item_embs).view(item_embs.size(0), -1) if self.n_v else None
+
+        out_hs = []
+        for conv in self.conv_h:
+            conv_out = self.ac_conv(conv(item_embs))
+            # Ensure we're always squeezing the correct dimension
+            conv_out = conv_out.squeeze(3)
+            pool_out = F.max_pool1d(conv_out, conv_out.size(2)).squeeze(2)
+            out_hs.append(pool_out)
+        out_h = torch.cat(out_hs, 1) if self.n_h else None
+
+        out = torch.cat([out_v, out_h], 1) if out_v is not None and out_h is not None else out_v or out_h
+        out = self.dropout(out)
+        z = self.ac_fc(self.fc1(out))
+        
+        x = z
+
+        w2 = self.W2.weight
+        b2 = self.b2.weight
+
+        res = torch.matmul(x, w2.t()) + b2
+
+        return res.squeeze()

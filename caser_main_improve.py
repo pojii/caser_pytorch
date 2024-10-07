@@ -1,0 +1,545 @@
+import argparse
+import torch
+import torch.optim as optim
+import numpy as np
+from time import time
+
+from interactions import Interactions
+from evaluation_without_user import evaluate_ranking
+from utils import set_seed, shuffle, str2bool
+from improved_caser import ImprovedCaser  # Import ImprovedCaser instead of Caser
+import matplotlib.pyplot as plt
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
+import torch.nn.functional as F
+import torch.nn as nn
+import csv
+
+
+class Recommender:
+    def __init__(self, n_iter, batch_size, learning_rate, l2, neg_samples, model_args, use_cuda, patience=10):
+        self._num_items = None
+        self._num_users = None
+        self._net = None
+        self.model_args = model_args
+        self._n_iter = n_iter
+        self._batch_size = batch_size
+        self._learning_rate = learning_rate
+        self._l2 = l2
+        self._neg_samples = neg_samples
+        self._device = torch.device("cuda" if use_cuda and torch.cuda.is_available() else "cpu")
+        print(f"Using device: {self._device}")
+        self._initialized = False
+        self.patience = patience
+        self.train_losses = []
+        self.val_losses = []
+        self.scheduler = None
+        self.learning_rates = []
+
+    def _initialize(self, interactions):
+        self._num_items = interactions.num_items
+        self._num_users = interactions.num_users
+        self.test_sequence = interactions.test_sequences
+
+        # Initialize the ImprovedCaser model
+        self._net = ImprovedCaser(self._num_users, self._num_items, self.model_args).to(self._device)
+        print(f"Model moved to device: {next(self._net.parameters()).device}")
+        
+        # Initialize the optimizer
+        self._optimizer = optim.Adam(self._net.parameters(), weight_decay=self._l2, lr=self._learning_rate)
+        
+        # Initialize ReduceLROnPlateau scheduler
+        self.scheduler = ReduceLROnPlateau(self._optimizer, mode='min', factor=0.5, patience=1, verbose=True)
+
+        self._initialized = True
+  
+    def fit(self, train, val, verbose=False):
+        if not self._initialized:
+            self._initialize(train)
+
+        sequences_np = train.sequences.sequences
+        targets_np = train.sequences.targets
+
+        val_sequences_np = val.sequences.sequences
+        val_targets_np = val.sequences.targets
+        
+        n_train = sequences_np.shape[0]
+        n_val = val_sequences_np.shape[0]
+        
+        print(f'Total training instances: {n_train}')
+        print(f'Total validation instances: {n_val}')
+        
+        best_val_loss = float('inf')
+        patience_counter = 0
+
+        for epoch_num in range(self._n_iter):
+            start_time = time()
+
+            self._net.train()
+
+            sequences_np, targets_np = shuffle(sequences_np, targets_np)
+            val_sequences_np, val_targets_np = shuffle(val_sequences_np, val_targets_np)
+            
+            negatives_np = self._generate_negative_samples(train, n=self._neg_samples)
+            val_negatives_np = self._generate_negative_samples(val, n=self._neg_samples)
+
+            sequences = torch.from_numpy(sequences_np).long().to(self._device)
+            targets = torch.from_numpy(targets_np).long().to(self._device)
+            negatives = torch.from_numpy(negatives_np).long().to(self._device)
+            
+            val_sequences = torch.from_numpy(val_sequences_np).long().to(self._device)
+            val_targets = torch.from_numpy(val_targets_np).long().to(self._device)
+            val_negatives = torch.from_numpy(val_negatives_np).long().to(self._device)
+
+            # Training step
+            self._net.train()
+            self._optimizer.zero_grad()
+            scores = self._net(sequences)
+            
+            pos_scores = scores[torch.arange(scores.size(0)).unsqueeze(1), targets]
+            neg_scores = scores[torch.arange(scores.size(0)).unsqueeze(1).expand(-1, negatives.size(1)), negatives]
+            
+            loss = self._net.compute_loss(pos_scores, neg_scores)
+            loss.backward()
+            self._optimizer.step()
+            
+            # Validation step
+            self._net.eval()
+            with torch.no_grad():
+                val_scores = self._net(val_sequences)
+                val_pos_scores = val_scores[torch.arange(val_scores.size(0)).unsqueeze(1), val_targets]
+                val_neg_scores = val_scores[torch.arange(val_scores.size(0)).unsqueeze(1).expand(-1, val_negatives.size(1)), val_negatives]
+                val_loss = self._net.compute_loss(val_pos_scores, val_neg_scores)
+
+            end_time = time()
+            print(f"Epoch {epoch_num + 1}\tloss={loss.item():.4f}\tval_loss={val_loss.item():.4f} [{end_time - start_time:.2f}s]")
+
+            # Save the training loss
+            self.train_losses.append(loss.item())
+            self.val_losses.append(val_loss.item())
+
+            # Learning rate scheduling
+            self.scheduler.step(val_loss)
+            
+            current_lr = self.scheduler.optimizer.param_groups[0]['lr']
+            self.learning_rates.append(current_lr)
+            print(f"Current learning rate: {current_lr}")
+
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                patience_counter = 0
+                print("New best validation loss, saving the model...")
+                self.save_model('best_model.pth')
+            else:
+                patience_counter += 1
+                print(f"Validation loss did not improve. Patience counter: {patience_counter}/{self.patience}")
+
+            if patience_counter >= self.patience:
+                print("Early stopping triggered. Stopping training.")
+                break
+
+    def _generate_negative_samples(self, interactions, n):
+        num_sequences = interactions.sequences.sequences.shape[0]
+        # ตรวจสอบและปรับค่า self._num_items ถ้าจำเป็น
+        self._num_items = max(self._num_items, interactions.num_items)
+        # สร้าง candidate items
+        all_items = set(range(self._num_items))
+        interacted_items = set(interactions.item_ids)
+        self._candidate = list(all_items - interacted_items)
+        if len(self._candidate) == 0:
+            # print("Warning: All items have been interacted with. Using a fallback method for negative sampling.")
+            # ใช้วิธี fallback, เช่น สุ่มจากทุก items ยกเว้น item ที่กำลังพิจารณา
+            negative_samples = np.zeros((num_sequences, n), np.int64)
+            for i in range(num_sequences):
+                current_items = set(interactions.sequences.sequences[i])
+                current_candidates = list(all_items - current_items)
+                negative_samples[i] = np.random.choice(current_candidates, size=n, replace=len(current_candidates) < n)
+        else:
+            negative_samples = np.zeros((num_sequences, n), np.int64)
+            for i in range(num_sequences):
+                if len(self._candidate) < n:
+                    negative_samples[i] = np.random.choice(self._candidate, size=n, replace=True)
+                else:
+                    negative_samples[i] = np.random.choice(self._candidate, size=n, replace=False)
+        
+        return negative_samples
+    def predict(self, sequence):
+        self._net.eval()
+        with torch.no_grad():
+            if isinstance(sequence, np.ndarray):
+                sequence = torch.from_numpy(sequence).long()
+            elif isinstance(sequence, list):
+                sequence = torch.LongTensor(sequence)
+            
+            sequence = sequence.to(self._device)
+            
+            if len(sequence.shape) == 1:
+                sequence = sequence.unsqueeze(0)
+            
+            # Clip the sequence to be within the valid range
+            sequence = torch.clamp(sequence, 0, self._num_items - 1)
+            
+            # print(f"Sequence shape: {sequence.shape}, Max value: {sequence.max().item()}, Min value: {sequence.min().item()}")
+            return self._net(sequence)
+
+    def load_pretrained_model(self, path):
+        """
+        Load the pre-trained model weights.
+        """
+        if self._net is None:
+            raise ValueError("Model is not initialized. Please call the _initialize method first.")
+        
+        pretrained_dict = torch.load(path, map_location=self._device)
+        model_dict = self._net.state_dict()
+
+        # Only load matching keys
+        pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict and v.shape == model_dict[k].shape}
+
+        model_dict.update(pretrained_dict)
+        self._net.load_state_dict(model_dict)
+
+    def save_model(self, path):
+        """
+        Save the model to a file.
+        """
+        torch.save(self._net.state_dict(), path)
+        print(f"Model saved to {path}")
+    
+
+def train_model(model, train_data, test_data, config, pretrained_model_path=None, save_model_path=None, is_pretrain=True):
+    """
+    Train or fine-tune the model and evaluate it.
+    """
+    print(f"{'Pretraining' if is_pretrain else 'Fine-tuning'} the model...")
+
+    if not model._initialized:
+        model._initialize(train_data)
+
+    if not is_pretrain and pretrained_model_path:
+        model.load_pretrained_model(pretrained_model_path)
+
+    # Get max index of items in training data sequences
+    max_item_index = np.max(train_data.sequences.sequences)
+    print(f"Max item index in training data: {max_item_index}")
+    
+    if torch.cuda.is_available():
+        print(f"GPU memory allocated: {torch.cuda.memory_allocated() / 1024**2:.2f} MB")
+        print(f"GPU memory cached: {torch.cuda.memory_reserved() / 1024**2:.2f} MB")
+
+    # Get max index of items in training data sequences
+    max_item_index = np.max(train_data.sequences.sequences)
+    print(f"Max item index in training data: {max_item_index}")
+    print(f"Number of items in model: {model._num_items}")
+
+    # Adjust model if necessary
+    if max_item_index >= model._num_items:
+        print(f"Adjusting model to accommodate {max_item_index + 1} items")
+        model._num_items = max_item_index + 1
+        model._net.num_items = model._num_items
+        model._net.item_embeddings = nn.Embedding(model._num_items, model._net.item_dims)
+        model._net.output = nn.Linear(model._net.item_dims, model._num_items)
+
+    # Clip training and test data
+    train_data.sequences.sequences = np.clip(train_data.sequences.sequences, 0, model._num_items - 1)
+    test_data.sequences.sequences = np.clip(test_data.sequences.sequences, 0, model._num_items - 1)
+
+    
+    model.fit(train_data, test_data, verbose=True)
+
+    if save_model_path is None:
+        save_model_path = 'edx_pretrained_model.pth' if is_pretrain else 'kaggle_finetuned_model.pth'
+    model.load_pretrained_model('best_model.pth')
+    model.save_model(save_model_path)
+    
+    # print("Performing final evaluation...")
+
+    # print("Performing final evaluation...")
+    # precision, recall, mean_aps, mrr, ndcg, _ = evaluate_ranking(model, test_data, train_data, k=[1, 5, 10])
+    # print(f"Final results:")
+    # print(f"Precision: @1={precision[0].mean():.4f}, @5={precision[1].mean():.4f}, @10={precision[2].mean():.4f}")
+    # print(f"Recall: @1={recall[0].mean():.4f}, @5={recall[1].mean():.4f}, @10={recall[2].mean():.4f}")
+    # print('mean_aps:', mean_aps)
+    # print('mrr:', mrr)
+    # print('ndcg:', ndcg)
+    # print(f"MAP={mean_aps:.4f}, MRR={mrr:.4f}, NDCG={ndcg[0]:.4f}")
+def plot_losses(edx_model, kaggle_model, thairobotics_model):
+    # หาความยาวที่มากที่สุดระหว่างทั้งสามโมเดล
+    max_epochs = max(len(edx_model.train_losses), len(kaggle_model.train_losses), len(thairobotics_model.train_losses))
+
+    # สร้างช่วง epochs ตามความยาวที่มากที่สุด
+    epochs = range(1, max_epochs + 1)
+
+    # Plot edX losses
+    plt.figure(figsize=(10, 6))
+    if len(edx_model.train_losses) > 0:
+        plt.plot(epochs[:len(edx_model.train_losses)], edx_model.train_losses, 'b-', label='edX Train Loss')
+    if len(edx_model.val_losses) > 0:
+        plt.plot(epochs[:len(edx_model.val_losses)], edx_model.val_losses, 'b--', label='edX Validation Loss')
+
+    # Plot Kaggle losses
+    if len(kaggle_model.train_losses) > 0:
+        plt.plot(epochs[:len(kaggle_model.train_losses)], kaggle_model.train_losses, 'g-', label='Kaggle Train Loss')
+    if len(kaggle_model.val_losses) > 0:
+        plt.plot(epochs[:len(kaggle_model.val_losses)], kaggle_model.val_losses, 'g--', label='Kaggle Validation Loss')
+
+    # Plot ThaiRobotics losses
+    if len(thairobotics_model.train_losses) > 0:
+        plt.plot(epochs[:len(thairobotics_model.train_losses)], thairobotics_model.train_losses, 'r-', label='ThaiRobotics Train Loss')
+    if len(thairobotics_model.val_losses) > 0:
+        plt.plot(epochs[:len(thairobotics_model.val_losses)], thairobotics_model.val_losses, 'r--', label='ThaiRobotics Validation Loss')
+
+    plt.title('Training and Validation Losses for edX, Kaggle, and ThaiRobotics')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.grid(True)
+
+    # บันทึกรูปเป็นไฟล์ PNG
+    plt.savefig('losses_plot.png')
+
+    # ปิดรูปภาพที่ plot เสร็จแล้วเพื่อเคลียร์หน่วยความจำ
+    plt.close()
+
+def plot_losses_and_lr(edx_model, kaggle_model, thairobotics_model):
+    # Plot edX losses and learning rate
+    plt.figure(figsize=(10, 6))
+    epochs = range(1, len(edx_model.train_losses) + 1)
+    plt.plot(epochs, edx_model.train_losses, 'b-', label='edX Train Loss')
+    plt.plot(epochs, edx_model.val_losses, 'r-', label='edX Validation Loss')
+    plt.plot(epochs, edx_model.learning_rates, 'k--', label='edX Learning Rate')
+    plt.title('Training and Validation Losses and Learning Rate for edX')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss / Learning Rate')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('edx_losses_and_lr_plot.png')
+    plt.close()
+
+    # Plot Kaggle losses and learning rate
+    plt.figure(figsize=(10, 6))
+    epochs = range(1, len(kaggle_model.train_losses) + 1)
+    plt.plot(epochs, kaggle_model.train_losses, 'g-', label='Kaggle Train Loss')
+    plt.plot(epochs, kaggle_model.val_losses, 'y-', label='Kaggle Validation Loss')
+    plt.plot(epochs, kaggle_model.learning_rates, 'k--', label='Kaggle Learning Rate')
+    plt.title('Training and Validation Losses and Learning Rate for Kaggle')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss / Learning Rate')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('kaggle_losses_and_lr_plot.png')
+    plt.close()
+
+    # Plot ThaiRobotics losses and learning rate
+    plt.figure(figsize=(10, 6))
+    epochs = range(1, len(thairobotics_model.train_losses) + 1)
+    plt.plot(epochs, thairobotics_model.train_losses, 'c-', label='ThaiRobotics Train Loss')
+    plt.plot(epochs, thairobotics_model.val_losses, 'm-', label='ThaiRobotics Validation Loss')
+    plt.plot(epochs, thairobotics_model.learning_rates, 'k--', label='ThaiRobotics Learning Rate')
+    plt.title('Training and Validation Losses and Learning Rate for ThaiRobotics')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss / Learning Rate')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('thairobotics_losses_and_lr_plot.png')
+    plt.close()
+    
+def plot_learning_rates(edx_model, kaggle_model, thairobotics_model):
+    # หาความยาวที่มากที่สุดระหว่างทั้งสามโมเดล
+    max_epochs = max(len(edx_model.learning_rates), len(kaggle_model.learning_rates), len(thairobotics_model.learning_rates))
+
+    # สร้างช่วง epochs ตามความยาวที่มากที่สุด
+    epochs = range(1, max_epochs + 1)
+
+    # Plot edX learning rates
+    plt.figure(figsize=(10, 6))
+    if len(edx_model.learning_rates) > 0:
+        plt.plot(epochs[:len(edx_model.learning_rates)], edx_model.learning_rates, 'b-', label='edX Learning Rate')
+
+    # Plot Kaggle learning rates
+    if len(kaggle_model.learning_rates) > 0:
+        plt.plot(epochs[:len(kaggle_model.learning_rates)], kaggle_model.learning_rates, 'g-', label='Kaggle Learning Rate')
+
+    # Plot ThaiRobotics learning rates
+    if len(thairobotics_model.learning_rates) > 0:
+        plt.plot(epochs[:len(thairobotics_model.learning_rates)], thairobotics_model.learning_rates, 'r-', label='ThaiRobotics Learning Rate')
+
+    plt.title('Learning Rates for edX, Kaggle, and ThaiRobotics')
+    plt.xlabel('Epochs')
+    plt.ylabel('Learning Rate')
+    plt.legend()
+    plt.grid(True)
+
+    # บันทึกรูปเป็นไฟล์ PNG
+    plt.savefig('learning_rates_plot.png')
+
+    # ปิดรูปภาพที่ plot เสร็จแล้วเพื่อเคลียร์หน่วยความจำ
+    plt.close()
+
+def generate_csv_report(user_metrics, output_file, ks=[1, 5, 10]):
+    """
+    Generate a CSV report with user predictions and metrics for multiple k values
+    """
+    with open(output_file, 'w', newline='') as csvfile:
+        fieldnames = ['user_id']
+        for k in ks:
+            fieldnames.extend([f'predictions@{k}', f'precision@{k}', f'recall@{k}'])
+        fieldnames.extend(['actual', 'apk', 'mrr@10', 'hit@10'])
+        
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        
+        writer.writeheader()
+        for user_id, metrics in user_metrics.items():
+            row = {'user_id': user_id}
+            for k in ks:
+                row[f'predictions@{k}'] = str(metrics['predictions'].get(k, [])[:k])  # Limit to k predictions
+                row[f'precision@{k}'] = metrics['precision'].get(k, 0)
+                row[f'recall@{k}'] = metrics['recall'].get(k, 0)
+            row['actual'] = str(metrics['actual'])
+            row['apk'] = metrics['apk']
+            row['mrr@10'] = metrics['mrr']
+            row['hit@10'] = metrics['hit_rate'].get(10, 0)  # Assuming hit_rate is a dict with k as keys
+            writer.writerow(row)
+    
+    print(f"CSV report generated: {output_file}")
+if __name__ == '__main__':
+    # Set up argument parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--edx_train_root', type=str, default='datasets/edx/train.txt')
+    parser.add_argument('--edx_test_root', type=str, default='datasets/edx/test.txt')
+    parser.add_argument('--kaggle_train_root', type=str, default='datasets/kaggle/train.txt')
+    parser.add_argument('--kaggle_test_root', type=str, default='datasets/kaggle/test.txt')
+    parser.add_argument('--thairobotics_train_root', type=str, default='datasets/coursera_thairobotics/train.txt')
+    parser.add_argument('--thairobotics_test_root', type=str, default='datasets/coursera_thairobotics/test.txt')
+    parser.add_argument('--L', type=int, default=5)
+    parser.add_argument('--T', type=int, default=10)
+    parser.add_argument('--n_iter', type=int, default=500)
+    parser.add_argument('--seed', type=int, default=1234)
+    parser.add_argument('--batch_size', type=int, default=256)
+    parser.add_argument('--learning_rate', type=float, default=5e-4)
+    parser.add_argument('--l2', type=float, default=1e-6)
+    parser.add_argument('--neg_samples', type=int, default=10)
+    parser.add_argument('--use_cuda', type=str2bool, default=True)
+
+    config = parser.parse_args()
+
+    model_parser = argparse.ArgumentParser()
+    model_parser.add_argument('--d', type=int, default=64)
+    model_parser.add_argument('--nv', type=int, default=4)
+    model_parser.add_argument('--nh', type=int, default=16)
+    model_parser.add_argument('--drop', type=float, default=0.5)
+    model_parser.add_argument('--ac_conv', type=str, default='relu')
+    model_parser.add_argument('--ac_fc', type=str, default='relu')
+
+    model_config = model_parser.parse_args([])
+    model_config.L = config.L
+
+    set_seed(config.seed, config.use_cuda)
+
+    # Load edX data
+    edx_train = Interactions(config.edx_train_root)
+    edx_train.to_sequence(config.L, config.T)
+    
+    edx_test = Interactions(config.edx_test_root, user_map=edx_train.user_map, item_map=edx_train.item_map)
+    edx_test.to_sequence(config.L, config.T)
+    
+    # Load validation data for edX
+    edx_val = Interactions('datasets/edx/val.txt')
+    edx_val.to_sequence(config.L, config.T)
+
+    # Create the ImprovedCaser model
+    edx_model = Recommender(n_iter=config.n_iter,
+                            batch_size=config.batch_size,
+                            learning_rate=config.learning_rate,
+                            l2=config.l2,
+                            neg_samples=config.neg_samples,
+                            model_args=model_config,
+                            use_cuda=config.use_cuda)
+
+    # Train the model
+    train_model(edx_model, edx_train, edx_val, config, is_pretrain=True, save_model_path='edx_improved_model.pth')
+
+    # Evaluate the model and generate CSV report
+    print("Performing final evaluation...")
+    ks = [1, 5, 10]
+    precisions, recalls, mean_aps, mean_mrr, mean_hit, user_metrics = evaluate_ranking(edx_model, edx_test, edx_train, k=ks)
+    
+    # Generate CSV report
+    generate_csv_report(user_metrics, 'edx_improved_user_predictions_and_metrics.csv', ks=ks)
+
+    # Print overall metrics
+    print(f"Overall results:")
+    for i, k in enumerate(ks):
+        print(f"Precision@{k}: {precisions[i].mean():.4f}")
+        print(f"Recall@{k}: {recalls[i].mean():.4f}")
+    print(f"MAP: {mean_aps:.4f}")
+    print(f"MRR@10: {mean_mrr:.4f}")
+    print(f"Hit@10: {mean_hit[0]:.4f}")
+
+    # Plot losses and learning rates
+    # plot_losses_and_lr([edx_model], ['edX'])
+    
+    # Precomputed embeddings for Kaggle
+    kaggle_precomputed_embeddings = np.load("datasets/kaggle/precomputed_embeddings.npy")
+
+    # Load validation data for Kaggle
+    kaggle_val = Interactions('datasets/kaggle/val.txt')
+    kaggle_val.to_sequence(config.L, config.T)
+
+    # Fine-tune the model on Kaggle data
+    kaggle_train = Interactions(config.kaggle_train_root)
+    kaggle_train.to_sequence(config.L, config.T)
+    kaggle_test = Interactions(config.kaggle_test_root, user_map=kaggle_train.user_map, item_map=kaggle_train.item_map)
+    kaggle_test.to_sequence(config.L, config.T)
+    kaggle_model = Recommender(n_iter=config.n_iter,
+                            batch_size=config.batch_size,
+                            learning_rate=config.learning_rate,
+                            l2=config.l2,
+                            neg_samples=config.neg_samples,
+                            model_args=model_config,
+                            use_cuda=config.use_cuda,
+                            # precomputed_embeddings=kaggle_precomputed_embeddings
+                            )
+
+    train_model(kaggle_model, kaggle_train, kaggle_val, config, pretrained_model_path='edx_pretrained_model.pth', is_pretrain=False, save_model_path='kaggle_finetuned_model.pth')
+
+    print("Performing final evaluation...")
+    ks = [1, 5, 10]
+    precisions, recalls, mean_aps, mean_mrr, mean_hit, user_metrics = evaluate_ranking(kaggle_model, kaggle_test, kaggle_train, k=ks)
+    
+    generate_csv_report(user_metrics, 'kaggle_improved_user_predictions_and_metrics.csv', ks=ks)
+    # Precomputed embeddings for ThaiRobotics
+    thairobotics_precomputed_embeddings = np.load("datasets/coursera_thairobotics/precomputed_embeddings.npy")
+
+    # Load validation data for ThaiRobotics
+    thairobotics_val = Interactions('datasets/coursera_thairobotics/val.txt')
+    thairobotics_val.to_sequence(config.L, config.T)
+
+    # Fine-tune the model on ThaiRobotics data
+    thairobotics_train = Interactions(config.thairobotics_train_root)
+    thairobotics_train.to_sequence(config.L, config.T)
+    thairobotics_test = Interactions(config.thairobotics_test_root, user_map=thairobotics_train.user_map, item_map=thairobotics_train.item_map)
+    thairobotics_test.to_sequence(config.L, config.T)
+    thairobotics_model = Recommender(n_iter=config.n_iter,
+                                    batch_size=config.batch_size,
+                                    learning_rate=config.learning_rate,
+                                    l2=config.l2,
+                                    neg_samples=config.neg_samples,
+                                    model_args=model_config,
+                                    use_cuda=config.use_cuda,
+                                    # precomputed_embeddings=thairobotics_precomputed_embeddings
+                                    )
+
+    train_model(thairobotics_model, thairobotics_train, thairobotics_val, config, pretrained_model_path='kaggle_finetuned_model.pth', is_pretrain=False, save_model_path='thairobotics_finetuned_model.pth')
+
+    print("Performing final evaluation...")
+    ks = [1, 5, 10]
+    precisions, recalls, mean_aps, mean_mrr, mean_hit, user_metrics = evaluate_ranking(thairobotics_model, thairobotics_test, thairobotics_train, k=ks)
+    
+    generate_csv_report(user_metrics, 'thairobotics_improved_user_predictions_and_metrics.csv', ks=ks)
+    
+    print("Pretraining and fine-tuning completed successfully.")
+    # Call plot_losses after training is completed for all datasets
+    plot_losses(edx_model, kaggle_model, thairobotics_model)
+    # เรียกใช้ฟังก์ชันเพื่อ plot ทั้งค่า Loss และ Learning Rate
+    plot_losses_and_lr(edx_model, kaggle_model, thairobotics_model)
+    plot_learning_rates(edx_model, kaggle_model, thairobotics_model)

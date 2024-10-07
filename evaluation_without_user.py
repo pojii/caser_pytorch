@@ -3,46 +3,46 @@ import torch
 
 def _compute_apk(actual, predicted, k=10):
     """
-    Compute the average precision at k.
-    This function computes the average precision at k between two lists of items.
-
-    Parameters
-    ----------
-    actual : list
-             A list of elements that are to be predicted (order doesn't matter)
-    predicted : list
-                A list of predicted elements (order does matter)
-    k : int, optional
-        The maximum number of predicted elements
-
-    Returns
-    -------
-    score : double
-            The average precision at k over the input lists
+    Compute Average Precision at k.
     """
-    if len(predicted) > k:
-        predicted = predicted[:k]
+    if len(actual) == 0:
+        return 0.0
+
+    if k is None or k == np.inf:
+        k = len(predicted)
+    else:
+        k = min(k, len(predicted))
+
+    actual = set(actual)  # Convert to set for faster lookup
+    predicted = predicted[:k]  # Only consider top k predictions
 
     score = 0.0
     num_hits = 0.0
-
+    # print('actual',actual)
     for i, p in enumerate(predicted):
-        if p in actual and p not in predicted[:i]:
+        if p in actual:
             num_hits += 1.0
             score += num_hits / (i + 1.0)
 
     return score / min(len(actual), k)
 
-
-def _compute_precision_recall(targets, predictions, k):
+def _compute_precision_recall(actual, predicted, k):
     """
-    Helper function to compute precision and recall at k.
+    Compute precision and recall at k.
     """
-    predictions_at_k = predictions[:k]
-    num_hits = sum((p in targets) for p in predictions_at_k)
+    if isinstance(actual, torch.Tensor):
+        actual = actual.cpu().numpy()
+    if isinstance(predicted, torch.Tensor):
+        predicted = predicted.cpu().numpy()
+    
+    actual = np.atleast_1d(actual)
+    predicted = np.atleast_1d(predicted)
 
-    precision = num_hits / k
-    recall = num_hits / len(targets)
+    predictions_at_k = predicted[:k]
+    num_hits = sum(np.isin(predictions_at_k, actual))
+
+    precision = num_hits / k if k > 0 else 0.0
+    recall = num_hits / len(actual) if len(actual) > 0 else 0.0
 
     return precision, recall
 
@@ -56,114 +56,98 @@ def _compute_mrr(targets, predictions, k):
             return 1.0 / (i + 1.0)
     return 0.0
 
-def _compute_hit_rate(targets, predictions, k):
+def _compute_hit_rate(actual, predicted, k):
     """
-    Compute the Hit Rate at k.
+    Compute Hit Rate at k.
     """
-    predictions_at_k = predictions[:k]
-    return 1.0 if any(p in targets for p in predictions_at_k) else 0.0
+    actual_set = set(actual)
+    # print('predicted',predicted[:k])
+    predicted_set = set(predicted[:k])
+    return float(len(actual_set & predicted_set) > 0)
 
-def evaluate_ranking(model, test, train=None, k=10):
-    """
-    Compute Precision@k, Recall@k scores and average precision (AP).
-    One score is given for every user with interactions in the test
-    set, representing the AP, Precision@k and Recall@k of all their
-    test items.
-
-    Parameters
-    ----------
-    model: fitted instance of a recommender model
-        The model to evaluate.
-    test: :class:`spotlight.interactions.Interactions`
-        Test interactions.
-    train: :class:`spotlight.interactions.Interactions`, optional
-        Train interactions. If supplied, rated items in
-        interactions will be excluded.
-    k: int or array of int,
-        The maximum number of predicted items
-    """
-
-    test = test.tocsr()
-
-    if train is not None:
-        train = train.tocsr()
-
-    test_users = list(range(test.shape[0]))
-
+def evaluate_ranking(model, test, train=None, k=[10]):
     if not isinstance(k, list):
-        ks = [k]
-    else:
-        ks = k
+        k = [k]
 
-    precisions = [list() for _ in range(len(ks))]
-    recalls = [list() for _ in range(len(ks))]
-    apks = list()
+    precisions = [[] for _ in range(len(k))]
+    recalls = [[] for _ in range(len(k))]
+    hit_rates = [[] for _ in range(len(k))]
+    apks = []
     mrrs = []
-    hits = []
 
-    for user_id in test_users:
-        if user_id >= model.test_sequence.sequences.shape[0] or len(model.test_sequence.sequences[user_id]) == 0:
-            continue
-        
-        if train is not None and user_id >= train.shape[0]:
-            print(f"Skipping user_id {user_id} as it's out of bounds for train data")
+    user_metrics = {}
+
+    for user_id in range(len(test.sequences.sequences)):
+        sequence = test.sequences.sequences[user_id]
+        if np.all(sequence == 0):
             continue
 
-        row = test[user_id]
+        if hasattr(test.sequences, 'targets') and user_id < len(test.sequences.targets):
+            actual = test.sequences.targets[user_id]
+            actual = actual[actual != 0]  # Remove padding
+        else:
+            actual = sequence[sequence != 0][-1:]
 
-        if not len(row.indices):
+        if len(actual) == 0:
             continue
+
+        # Clip sequence values to be within the valid range
+        sequence = np.clip(sequence, 0, model._num_items - 1)
 
         try:
-            # predictions = -model.predict(user_id)
-            sequence = model.test_sequence.sequences[user_id, :]
-            predictions = -model.predict(sequence)
-        except IndexError:
-            print(f"Error predicting for user_id {user_id}. Skipping.")
-            continue
+            if len(sequence.shape) == 1:
+                sequence = sequence.reshape(1, -1)
+            predictions = model.predict(sequence).squeeze()
+            predictions = -predictions  # Invert predictions for ranking
         except RuntimeError as e:
             print(f"Runtime error during prediction for user_id {user_id}: {e}")
             continue
 
-        if np.all(predictions == 0):
-            continue
+        if isinstance(predictions, torch.Tensor):
+            predictions = predictions.cpu().numpy()
+        
 
-        predictions = predictions.argsort()
+        # Sort predictions
+        top_k = np.argsort(predictions)[::-1]
 
-        if train is not None:
-            rated = set(train[user_id].indices)
-        else:
-            rated = set()
+        user_metrics[user_id] = {
+            'predictions': {},
+            'actual': actual.tolist() if isinstance(actual, np.ndarray) else actual,
+            'precision': {},
+            'recall': {},
+            'hit_rate': {},
+            'apk': 0,
+            'mrr': 0
+        }
 
-        predictions = [p for p in predictions if p not in rated]
-
-        targets = row.indices
-
-        for i, _k in enumerate(ks):
-            precision, recall = _compute_precision_recall(targets, predictions, _k)
+        for i, _k in enumerate(k):
+            precision, recall = _compute_precision_recall(actual, top_k, _k)
+            hit_rate = _compute_hit_rate(actual, top_k, _k)
+            
             precisions[i].append(precision)
             recalls[i].append(recall)
+            hit_rates[i].append(hit_rate)
 
-            if _k == 10:  # Compute MRR@10 and Hit@10 for k=10
-                mrr = _compute_mrr(targets, predictions, _k)
-                hit = _compute_hit_rate(targets, predictions, _k)
-                mrrs.append(mrr)
-                hits.append(hit)
+            user_metrics[user_id]['predictions'][_k] = top_k[:_k].tolist()
+            user_metrics[user_id]['precision'][_k] = precision
+            user_metrics[user_id]['recall'][_k] = recall
+            user_metrics[user_id]['hit_rate'][_k] = hit_rate
 
-        apks.append(_compute_apk(targets, predictions, k=np.inf))
+        apk = _compute_apk(actual, top_k, k=np.inf)
+        mrr = _compute_mrr(actual, top_k, k=max(k))
+        
+        apks.append(apk)
+        mrrs.append(mrr)
+        
+        user_metrics[user_id]['apk'] = apk
+        user_metrics[user_id]['mrr'] = mrr
 
-    precisions = [np.array(i) for i in precisions]
-    recalls = [np.array(i) for i in recalls]
+    mean_precision = [np.mean(p) for p in precisions]
+    mean_recall = [np.mean(r) for r in recalls]
+    mean_hit_rate = [np.mean(h) for h in hit_rates]
+    mean_apk = np.mean(apks)
+    mean_mrr = np.mean(mrrs)
 
-    if not isinstance(k, list):
-        precisions = precisions[0]
-        recalls = recalls[0]
+    print(f"Processed {len(user_metrics)} valid users out of {len(test.test_sequences.sequences)} total users")
 
-    mean_aps = np.mean(apks) if apks else 0.0
-    mean_mrr = np.mean(mrrs) if mrrs else 0.0
-    mean_hit = np.mean(hits) if hits else 0.0
-
-    print(f"Processed {len(apks)} valid users out of {test.shape[0]} total users")
-
-    return precisions, recalls, mean_aps, mean_mrr, mean_hit
-
+    return mean_precision, mean_recall, mean_apk, mean_mrr, mean_hit_rate, user_metrics

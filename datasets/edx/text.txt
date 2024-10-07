@@ -1,12 +1,11 @@
+0 <PAD>
 1 Human Health and Global Environmental
 2 The Challenges of Global Poverty
 3 Introduction to Computer Science
 4 JusticeX
 5 The Ancient Greek Hero
-6 Introduction to Computer
-Science and Programming Fall
-7 Introduction to Computer
-Science and Programming Spring
+6 Introduction to Computer Science and Programming Fall
+7 Introduction to Computer Science and Programming Spring
 8 Circuits and Electronics Spring
 9 Electricity and Magnetism
 10 Introduction to Biology

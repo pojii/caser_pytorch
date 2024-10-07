@@ -89,17 +89,26 @@ class Interactions(object):
 
         # Sort first by user id
         sort_indices = np.lexsort((self.user_ids,))
-
+        # print('self.user_ids', self.user_ids)
         user_ids = self.user_ids[sort_indices]
         item_ids = self.item_ids[sort_indices]
-
+        # print('item_ids', item_ids)
         user_ids, indices, counts = np.unique(user_ids,
                                             return_index=True,
                                             return_counts=True)
-
-        num_subsequences = sum([max(1, c - sequence_length) for c in counts])
-
+        # print('user_ids, indices, counts', user_ids, indices, counts)
+        # print('counts',counts)
+        temp_sum = [max(1, c - sequence_length) for c in counts]
+        # print('temp_sum', temp_sum)
+        num_subsequences = sum(temp_sum)
+        # for i in range(len(temp_sum)):
+        #     print(f"User {i} has {temp_sum[i]} subsequences")
+        #     print(f"User {i} has {counts[i]} items")
+        #     print(f"User {i} has {counts[i] - sequence_length} subsequences")
+        # print('num_subsequences', num_subsequences)
         sequences = np.zeros((num_subsequences, sequence_length), dtype=np.int64)
+        # for i in range(len(temp_sum)):
+        #     print(f"User {i} has {sequences[i]} subsequences")
         sequences_targets = np.zeros((num_subsequences, target_length), dtype=np.int64)
         sequence_users = np.empty(num_subsequences, dtype=np.int64)
 
@@ -108,28 +117,41 @@ class Interactions(object):
 
         idx = 0
         for user, user_item_ids in zip(user_ids, np.split(item_ids, indices[1:])):
-            # if len(user_item_ids) > sequence_length:
-            for i in range(max(1, len(user_item_ids) - sequence_length)):
-                seq = user_item_ids[i:i + sequence_length]
-                tgt = user_item_ids[i + sequence_length:i + max_sequence_length]
-
-                # Ensure we add the right padding for target sequences
-                if len(tgt) > 0:
-                    # Left-pad sequences with 0
-                    sequences[idx, -len(seq):] = seq
-                    # Right-pad targets with 0
-                    sequences_targets[idx, :len(tgt)] = tgt
-                    sequence_users[idx] = user
-                    idx += 1
-
+            if len(user_item_ids) >= 2:
+                if len(user_item_ids) > sequence_length:
+                    for i in range(len(user_item_ids) - sequence_length):
+                        seq = user_item_ids[i:i + sequence_length]
+                        tgt = user_item_ids[i + sequence_length:i + 2 * sequence_length]
+                else:
+                    half_length = len(user_item_ids) // 2
+                    seq = user_item_ids[:half_length]
+                    tgt = user_item_ids[half_length:]
+                    
+                # Left-pad sequences with 0
+                sequences[idx, -len(seq):] = seq
+                # Right-pad targets with 0
+                sequences_targets[idx, :len(tgt)] = tgt
+                sequence_users[idx] = user
+                idx += 1
+            
             # Test sequences (last sequence for the user)
             test_sequences[user, -len(user_item_ids[-sequence_length:]):] = user_item_ids[-sequence_length:]
             test_users[user] = user
 
-        # Cut down excess sequences
-        sequences = sequences[:idx]
-        sequences_targets = sequences_targets[:idx]
-        sequence_users = sequence_users[:idx]
+        # Remove sequences that are all zeros
+        non_zero_indices = [i for i in range(len(sequences)) if not np.all(sequences[i] == 0)]
+        sequences = sequences[non_zero_indices]
+        sequences_targets = sequences_targets[non_zero_indices]
+        sequence_users = sequence_users[non_zero_indices]
+
+        # Sample sequences if they exceed max_samples
+        if len(sequences) > 100000:
+            indices = np.random.choice(len(sequences), 100000, replace=False)
+            sequences = np.array([sequences[i] for i in indices])
+            sequences_targets = np.array([sequences_targets[i] for i in indices])
+            sequence_users = np.array([sequence_users[i] for i in indices])
+
+        print(f"Total sequences: {len(sequences)}")
 
         print(f"Total sequences: {len(sequences)}")
 
